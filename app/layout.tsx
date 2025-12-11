@@ -1,5 +1,6 @@
 import "./globals.css";
 import  type { ReactNode } from "react";
+import { Footer } from "./components/Footer";
 
 export const metadata = {
     title: "Global Living Exchange",
@@ -11,6 +12,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <html lang="en">
             <body>
                 {children}
+                <Footer />
             </body>
         </html>
     );

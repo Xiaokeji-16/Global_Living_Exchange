@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Moon, Sun } from "lucide-react";
+import { useRouter } from "next/navigation"; 
  
 export default function LoginPage() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
@@ -25,6 +26,7 @@ export default function LoginPage() {
     setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
   };    
 
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -38,7 +40,8 @@ export default function LoginPage() {
     }
 
     // 这里先做一个假的提示，后面再接后端 API
-    alert(`Mock login success for: ${email}`);
+    // alert(`Mock login success for: ${email}`);
+    router.push("/dashboard");
   };
 
   return (
