@@ -15,7 +15,7 @@ export function Header({ theme, toggleTheme }: HeaderProps) {
 
   const navLinks = [
     { label: 'Home', href: '/'},
-    { label: 'property', href: "/#properties"},
+    { label: 'property', href: "/properties"},
     { label: 'About us', href: "/#about-us"},
     { label: 'Contact us', href: "/#contact"},
   ];
