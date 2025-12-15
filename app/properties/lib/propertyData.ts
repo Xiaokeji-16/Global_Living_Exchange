@@ -1,6 +1,28 @@
 // app/properties/lib/propertyData.ts
 
-export const MOCK_PROPERTIES = [
+// 房源的结构
+export type Property = {
+  id: number;
+  city: string;
+  country: string;
+  title: string;
+  guests: number;
+  beds: number;
+  referencePoints?: number;
+  tags?: string[];
+  imageSrc: string;
+  verified: boolean;
+};
+
+// 顶部筛选条 / 列表用到的筛选类型
+export type PropertyFilters = {
+  query: string; // 文本搜索：城市 / 国家 / 标题
+  type: "all" | "luxury" | "beach" | "city";
+  pointsRange: "any" | "0-600" | "600-700" | "700+";
+};
+
+// 临时假数据
+export const MOCK_PROPERTIES: Property[] = [
   {
     id: 1,
     city: "Lisbon",
@@ -32,25 +54,21 @@ export const MOCK_PROPERTIES = [
     title: "Beachfront Villa Retreat",
     guests: 8,
     beds: 4,
-    referencePoints: undefined,
+    referencePoints: undefined, // 没有估值
     tags: ["Beach", "Long stay"],
     imageSrc: "/icon/cozy_home.jpg",
     verified: true,
   },
-] as const;
+];
 
-export type Property = (typeof MOCK_PROPERTIES)[number];
-
-export type PropertyFilters = {
-  query: string;
-  type: "all" | "luxury" | "beach" | "city";
-  pointsRange: "any" | "0-600" | "600-700" | "700+";
-};
-
-// 过滤逻辑单独导出
-export function matchesFilters(property: Property, filters: PropertyFilters) {
+// 根据 filters 判断一个 property 要不要保留
+export function matchesFilters(
+  property: Property,
+  filters: PropertyFilters
+): boolean {
   const { query, type, pointsRange } = filters;
 
+  // 1. 文本匹配
   const q = query.trim().toLowerCase();
   if (q) {
     const inCity = property.city.toLowerCase().includes(q);
@@ -59,15 +77,16 @@ export function matchesFilters(property: Property, filters: PropertyFilters) {
     if (!inCity && !inCountry && !inTitle) return false;
   }
 
+  // 2. 类型匹配（用 tags 简单模拟）
   if (type !== "all") {
     const tagsLower = (property.tags ?? []).map((t) => t.toLowerCase());
     if (type === "luxury" && !tagsLower.includes("luxury")) return false;
     if (type === "beach" && !tagsLower.includes("beach")) return false;
-    if (type === "city" && !tagsLower.some((t) => t.includes("city"))) {
+    if (type === "city" && !tagsLower.some((t) => t.includes("city")))
       return false;
-    }
   }
 
+  // 3. 积分区间
   const pts = property.referencePoints;
   if (pointsRange !== "any" && typeof pts === "number") {
     if (pointsRange === "0-600" && !(pts <= 600)) return false;
@@ -76,4 +95,11 @@ export function matchesFilters(property: Property, filters: PropertyFilters) {
   }
 
   return true;
+}
+
+// 按 id 查找房源，给详情页用
+export function getPropertyById(id: string | number): Property | undefined {
+  const numericId = Number(id);
+  if (Number.isNaN(numericId)) return undefined;
+  return MOCK_PROPERTIES.find((p) => p.id === numericId);
 }

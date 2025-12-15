@@ -1,3 +1,5 @@
+"use client";
+
 import PropertyCard from "./PropertyCard";
 import {
   MOCK_PROPERTIES,
@@ -27,7 +29,7 @@ export default function PropertyListSection({ filters }: Props) {
             <PropertyCard
               key={p.id}
               property={p}
-              href={`/properties/${p.id}`}   // ✅ 在这里决定：列表上的卡片点击进详情
+              href={`/properties/${p.id}`}   
             />
           ))
         )}

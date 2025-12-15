@@ -1,3 +1,4 @@
+// app/properties/components/PropertySearchBar.tsx
 "use client";
 
 import { useState, useEffect, type FormEvent } from "react";
@@ -13,7 +14,7 @@ export default function PropertySearchBar({ filters, onApply }: Props) {
   // 本地表单状态
   const [localFilters, setLocalFilters] = useState<PropertyFilters>(filters);
 
-  // 外部 filters 变化时，同步到本地
+  // 外部 filters 变化时，同步到表单里
   useEffect(() => {
     setLocalFilters(filters);
   }, [filters]);
@@ -45,8 +46,9 @@ export default function PropertySearchBar({ filters, onApply }: Props) {
     "700+",
   ];
 
+  // ⭐ 显式写 prev: PropertyFilters
   const handleCycleType = () => {
-    setLocalFilters((prev) => {
+    setLocalFilters((prev: PropertyFilters) => {
       const index = typeCycle.indexOf(prev.type);
       const next = typeCycle[(index + 1) % typeCycle.length];
       return { ...prev, type: next };
@@ -54,14 +56,13 @@ export default function PropertySearchBar({ filters, onApply }: Props) {
   };
 
   const handleCyclePointsRange = () => {
-    setLocalFilters((prev) => {
+    setLocalFilters((prev: PropertyFilters) => {
       const index = pointsCycle.indexOf(prev.pointsRange);
       const next = pointsCycle[(index + 1) % pointsCycle.length];
       return { ...prev, pointsRange: next };
     });
   };
 
-  // ⭐⭐ 关键：一定要有 `return (...)`，否则返回类型就是 void ⭐⭐
   return (
     <section aria-label="Property search filters">
       <form
@@ -78,7 +79,7 @@ export default function PropertySearchBar({ filters, onApply }: Props) {
               placeholder="Destination (City/Country)"
               value={localFilters.query}
               onChange={(e) =>
-                setLocalFilters((prev) => ({
+                setLocalFilters((prev: PropertyFilters) => ({
                   ...prev,
                   query: e.target.value,
                 }))
@@ -90,7 +91,7 @@ export default function PropertySearchBar({ filters, onApply }: Props) {
           {/* 分隔线 */}
           <div className="hidden sm:block h-6 w-px bg-[rgb(var(--color-border))]" />
 
-          {/* Dates */}
+          {/* Dates：现在只是 UI 占位 */}
           <button
             type="button"
             className="hidden sm:flex items-center gap-2 text-sm text-[rgb(var(--color-muted))]"
@@ -102,7 +103,7 @@ export default function PropertySearchBar({ filters, onApply }: Props) {
           {/* 分隔线 */}
           <div className="hidden sm:block h-6 w-px bg-[rgb(var(--color-border))]" />
 
-          {/* Guests */}
+          {/* Guests：同样只是 UI 占位 */}
           <button
             type="button"
             className="hidden sm:flex items-center gap-2 text-sm text-[rgb(var(--color-muted))]"
@@ -111,7 +112,7 @@ export default function PropertySearchBar({ filters, onApply }: Props) {
             <span>Guests</span>
           </button>
 
-          {/* Search 按钮 */}
+          {/* Search 提交按钮 */}
           <button
             type="submit"
             className="ml-auto rounded-full bg-[rgb(var(--color-primary))] text-[rgb(var(--color-primary-foreground))] px-6 sm:px-8 py-2 text-sm sm:text-base font-medium hover:opacity-90 transition"
@@ -122,7 +123,7 @@ export default function PropertySearchBar({ filters, onApply }: Props) {
 
         {/* 右：Type / Points Range / More Filters */}
         <div className="flex gap-3">
-          {/* Type */}
+          {/* Type 过滤 */}
           <button
             type="button"
             onClick={handleCycleType}
@@ -132,7 +133,7 @@ export default function PropertySearchBar({ filters, onApply }: Props) {
             <span>Type: {typeLabelMap[localFilters.type]}</span>
           </button>
 
-          {/* Points Range */}
+          {/* Points Range 过滤 */}
           <button
             type="button"
             onClick={handleCyclePointsRange}
@@ -142,7 +143,7 @@ export default function PropertySearchBar({ filters, onApply }: Props) {
             <span>Points: {pointsLabelMap[localFilters.pointsRange]}</span>
           </button>
 
-          {/* More Filters */}
+          {/* More Filters 占位 */}
           <button
             type="button"
             className="inline-flex items-center gap-2 rounded-full border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] px-4 py-2 text-sm text-[rgb(var(--color-foreground))] hover:border-[rgb(var(--color-primary))] transition"
