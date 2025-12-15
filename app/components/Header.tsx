@@ -1,30 +1,56 @@
 "use client";
 
-import Image from 'next/image'; 
-import { useState } from 'react';
-import { Menu, X, Moon, Sun } from 'lucide-react';
-import Link from 'next/link';
+import Image from "next/image";
+import { useState } from "react";
+import { Menu, X, Moon, Sun } from "lucide-react";
+import Link from "next/link";
 
 interface HeaderProps {
-  theme: 'light' | 'dark';
+  theme: "light" | "dark";
   toggleTheme: () => void;
+  /** 未登录(public) / 已登录(authed)，默认 public */
+  variant?: "public" | "authed";
+  /** 如果需要自定义退出逻辑，可以传这个回调 */
+  onLogoutClick?: () => void;
 }
 
-export function Header({ theme, toggleTheme }: HeaderProps) {
+export function Header({
+  theme,
+  toggleTheme,
+  variant = "public",
+  onLogoutClick,
+}: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const navLinks = [
-    { label: 'Home', href: '/'},
-    { label: 'property', href: "/properties"},
-    { label: 'About us', href: "/#about-us"},
-    { label: 'Contact us', href: "/#contact"},
+  const publicNavLinks = [
+    { label: "Home", href: "/" },
+    { label: "Property", href: "/properties" },
+    { label: "About us", href: "/#about-us" },
+    { label: "Contact us", href: "/#contact" },
   ];
+
+  const authedNavLinks = [
+    { label: "Home", href: "/dashboard" },
+    { label: "Property", href: "/properties" },
+    { label: "Upload home", href: "/upload-home" }, // 你后面可以改成真实路由
+    { label: "My account", href: "/account" },
+    { label: "Contact us", href: "/#contact" },
+  ];
+
+  const navLinks = variant === "authed" ? authedNavLinks : publicNavLinks;
+  const isPublic = variant === "public";
+
+  const handleLogout = () => {
+    if (onLogoutClick) {
+      onLogoutClick();
+    }
+    // 否则先什么都不做，后面你接入真实登出逻辑即可
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-[rgb(var(--color-background))]/95 backdrop-blur border-b border-[rgb(var(--color-border))]">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center gap-2">
             <Image
@@ -41,13 +67,13 @@ export function Header({ theme, toggleTheme }: HeaderProps) {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {navLinks.map((item) => (
-              <a
+              <Link
                 key={item.label}
                 href={item.href}
                 className="text-base md:text-lg text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-primary))] transition-colors"
               >
                 {item.label}
-              </a>
+              </Link>
             ))}
           </div>
 
@@ -58,20 +84,33 @@ export function Header({ theme, toggleTheme }: HeaderProps) {
               className="p-2 text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-foreground))] transition-colors"
               aria-label="Toggle theme"
             >
-              {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+              {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
             </button>
 
-            <Link
-              href="/login"
-              className="text-base md:text-lg text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-primary))] transition-colors"
+            {isPublic ? (
+              <>
+                <Link
+                  href="/login"
+                  className="text-base md:text-lg text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-primary))] transition-colors"
+                >
+                  Log in
+                </Link>
+                <Link
+                  href="/signup"
+                  className="px-6 py-2 bg-[rgb(var(--color-primary))] text-[rgb(var(--color-primary-foreground))] rounded-full hover:opacity-90 transition-opacity text-base md:text-lg font-medium"
+                >
+                  Sign up
+                </Link>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="text-base md:text-lg text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-primary))] transition-colors"
               >
-              Log in
-            </Link>
-            <Link 
-              href="/signup"
-              className="px-6 py-2 bg-[rgb(var(--color-primary))] text-[rgb(var(--color-primary-foreground))] rounded-full hover:opacity-90 transition-opacity text-base md:text-lg font-medium">
-              Sign up
-            </Link>
+                Logout
+              </button>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -81,7 +120,7 @@ export function Header({ theme, toggleTheme }: HeaderProps) {
               className="p-2 text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-foreground))] transition-colors"
               aria-label="Toggle theme"
             >
-              {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+              {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
             </button>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -98,22 +137,46 @@ export function Header({ theme, toggleTheme }: HeaderProps) {
           <div className="md:hidden py-4 border-t border-[rgb(var(--color-border))]">
             <div className="flex flex-col space-y-3">
               {navLinks.map((item) => (
-                <a
+                <Link
                   key={item.label}
                   href={item.href}
                   className="text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-primary))] transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {item.label}
-                </a>
+                </Link>
               ))}
+
               <div className="pt-3 flex flex-col space-y-2 border-t border-[rgb(var(--color-border))]">
-                <button className="text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-primary))] transition-colors text-left">
-                  Log in
-                </button>
-                <button className="px-6 py-2 bg-[rgb(var(--color-primary))] text-[rgb(var(--color-primary-foreground))] rounded-full hover:opacity-90 transition-opacity">
-                  Sign up
-                </button>
+                {isPublic ? (
+                  <>
+                    <Link
+                      href="/login"
+                      className="text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-primary))] transition-colors"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Log in
+                    </Link>
+                    <Link
+                      href="/signup"
+                      className="px-6 py-2 bg-[rgb(var(--color-primary))] text-[rgb(var(--color-primary-foreground))] rounded-full hover:opacity-90 transition-opacity text-center"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Sign up
+                    </Link>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleLogout();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-primary))] transition-colors text-left"
+                  >
+                    Logout
+                  </button>
+                )}
               </div>
             </div>
           </div>
