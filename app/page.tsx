@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { Header } from './components/Header';
-import { Footer } from './components/Footer';
 import { Hero } from "./components/Hero";
 import { HowItWorksSection } from "./components/HowtoworkSection";
 import { FeaturedHomesSection } from "./components/FeatureHomesSection";
@@ -12,17 +11,13 @@ export default function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
-    // Check system preference on mount
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    setTheme(prefersDark ? 'dark' : 'light');
-  }, []);
-
-  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const root = window.document.documentElement;
     // Apply theme to document
     if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
+      root.classList.add('dark');
     } else {
-      document.documentElement.classList.remove('dark');
+      root.classList.remove('dark');
     }
   }, [theme]);
 

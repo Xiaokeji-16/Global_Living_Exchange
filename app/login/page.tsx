@@ -8,17 +8,13 @@ import { useRouter } from "next/navigation";
 export default function LoginPage() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   useEffect(() => {
-    // Check system preference on mount
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    setTheme(prefersDark ? 'dark' : 'light');
-  }, []);
+    if (typeof window === "undefined") return;
+    const root = window.document.documentElement;
 
-    useEffect(() => {
-    // Apply theme to document
     if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
+      root.classList.add('dark');
     } else {
-      document.documentElement.classList.remove('dark');
+      root.classList.remove('dark');
     }
   }, [theme]);
 

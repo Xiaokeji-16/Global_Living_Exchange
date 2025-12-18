@@ -15,21 +15,16 @@ export default function PropertiesPage() {
   // 主题（和首页保持一致）
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
-  // 第一次加载时，根据系统偏好设置主题
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)"
-    ).matches;
-    setTheme(prefersDark ? "dark" : "light");
-  }, []);
-
   // 切换 html 上的 .dark class
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const root = window.document.documentElement; // <html>
+
     if (theme === "dark") {
-      document.documentElement.classList.add("dark");
+      root.classList.add("dark");
     } else {
-      document.documentElement.classList.remove("dark");
+      root.classList.remove("dark");
     }
   }, [theme]);
 

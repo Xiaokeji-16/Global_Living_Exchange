@@ -3,7 +3,6 @@
 
 import { useEffect, useState } from "react";
 import { Header } from "../components/Header";
-
 import { AboutHero } from "./components/AboutHero";
 import { AboutHowItWorks } from "./components/AboutHowItWorks";
 import { AboutCommunity } from "./components/AboutCommunity";
@@ -15,17 +14,13 @@ export default function AboutPage() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
-    const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)"
-    ).matches;
-    setTheme(prefersDark ? "dark" : "light");
-  }, []);
+    if (typeof window === "undefined") return;
+    const root = window.document.documentElement;
 
-  useEffect(() => {
     if (theme === "dark") {
-      document.documentElement.classList.add("dark");
+      root.classList.add("dark");
     } else {
-      document.documentElement.classList.remove("dark");
+      root.classList.remove("dark");
     }
   }, [theme]);
 
