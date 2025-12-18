@@ -25,8 +25,8 @@ export function Header({
   const publicNavLinks = [
     { label: "Home", href: "/" },
     { label: "Property", href: "/properties" },
-    { label: "About us", href: "/#about-us" },
-    { label: "Contact us", href: "/#contact" },
+    { label: "About us", href: "/about" },
+    { label: "Contact us", href: "/contact" },
   ];
 
   const authedNavLinks = [
@@ -52,17 +52,19 @@ export function Header({
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex-shrink-0 flex items-center gap-2">
+          <Link 
+            href='/'
+            className="flex-shrink-0 flex items-center gap-2">
             <Image
               src="/icon/home_app_logo.svg"
               alt="Global Living Exchange Logo"
               width={35}
               height={35}
             />
-            <span className="text-[rgb(var(--color-primary))] font-semibold text-xl md:text-2xl">
+            <span className="flex-shrink-0 flex items-center gap-2 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--color-primary))]">
               Global Living Exchange
             </span>
-          </div>
+          </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
