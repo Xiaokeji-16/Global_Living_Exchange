@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useTheme} from "./hooks/useTheme"
 import { Header } from './components/Header';
 import { Hero } from "./components/Hero";
 import { HowItWorksSection } from "./components/HowtoworkSection";
@@ -8,22 +8,8 @@ import { FeaturedHomesSection } from "./components/FeatureHomesSection";
 import { TrustSection } from "./components/TrustSection";
 
 export default function App() {
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const { theme, toggleTheme } = useTheme();
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const root = window.document.documentElement;
-    // Apply theme to document
-    if (theme === 'dark') {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
-  };
 
   return (
     <div className="min-h-screen bg-[rgb(var(--color-background))]">

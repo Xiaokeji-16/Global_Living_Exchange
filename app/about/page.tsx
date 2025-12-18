@@ -1,32 +1,18 @@
 // app/about/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
 import { Header } from "../components/Header";
 import { AboutHero } from "./components/AboutHero";
 import { AboutHowItWorks } from "./components/AboutHowItWorks";
 import { AboutCommunity } from "./components/AboutCommunity";
 import { AboutWhy } from "./components/AboutWhy";
 import { AboutCTA } from "./components/AboutCTA";
+import { useTheme } from "../hooks/useTheme"
 
 
 export default function AboutPage() {
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const { theme, toggleTheme } = useTheme();
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const root = window.document.documentElement;
-
-    if (theme === "dark") {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "light" ? "dark" : "light"));
-  };
 
   return (
     <div className="min-h-screen bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">

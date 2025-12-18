@@ -1,31 +1,15 @@
 // app/contact/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
 import { Header } from "../components/Header";
-
+import { useTheme} from "../hooks/useTheme"
 import { ContactIntro } from "./components/ContactIntro";
 import { ContactHelpList } from "./components/ContactHelpList";
 import { ContactMetaCards } from "./components/ContactMetaCards";
 import { ContactForm } from "./components/ContactForm";
 
 export default function ContactPage() {
-  const [theme, setTheme] = useState<"light" | "dark">("light");
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const root = window.document.documentElement;
-  
-    if (theme === "dark") {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "light" ? "dark" : "light"));
-  };
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <div className="min-h-screen bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">

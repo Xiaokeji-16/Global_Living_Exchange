@@ -3,25 +3,13 @@
 import { useState, useEffect } from "react";
 import { Moon, Sun } from "lucide-react";
 import Link from "next/link";
+import { useTheme } from "../hooks/useTheme"
 
 export default function SignupPage() {
   // 主题状态（和 login 一样）
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const { theme, toggleTheme } = useTheme();
+  
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const root = window.document.documentElement;
-
-    if (theme === "dark") {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "light" ? "dark" : "light"));
-  };
 
   // 表单字段状态
   const [fullName, setFullName] = useState("");

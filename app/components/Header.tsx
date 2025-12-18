@@ -58,8 +58,8 @@ export function Header({
             <Image
               src="/icon/home_app_logo.svg"
               alt="Global Living Exchange Logo"
-              width={35}
-              height={35}
+              width={45}
+              height={45}
             />
             <span className="flex-shrink-0 flex items-center gap-2 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--color-primary))]">
               Global Living Exchange

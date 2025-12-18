@@ -1,7 +1,7 @@
 // app/dashboard/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useTheme } from "../hooks/useTheme"
 import { Header } from "../components/Header";
 import DashboardWelcome from "./components/DashboardWelcome";
 import DashboardStatsRow from "./components/DashboardStatsRow";
@@ -17,21 +17,7 @@ import {
 } from "./lib/dashboardData";
 
 export default function DashboardPage() {
-  const [theme, setTheme] = useState<"light" | "dark">("dark");
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const root = window.document.documentElement;
-
-    if (theme === "dark") {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
-  }, [theme]);
-
-  const toggleTheme = () =>
-    setTheme((prev) => (prev === "light" ? "dark" : "light"));
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <div className="min-h-screen bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">

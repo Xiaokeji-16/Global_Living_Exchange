@@ -8,29 +8,15 @@ import { Header } from "../components/Header";
 import PropertySearchBar from "./components/PropertySearchBar";
 import PropertyListSection from "./components/PropertyListSection";
 import PointsMapSection from "./components/PointsMapSection";
-
+import { useTheme } from "../hooks/useTheme"
 import type { PropertyFilters } from "./lib/propertyData";
 
 export default function PropertiesPage() {
   // 主题（和首页保持一致）
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const { theme, toggleTheme } = useTheme();
 
-  // 切换 html 上的 .dark class
-  useEffect(() => {
-    if (typeof window === "undefined") return;
+  
 
-    const root = window.document.documentElement; // <html>
-
-    if (theme === "dark") {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "light" ? "dark" : "light"));
-  };
 
   // 当前生效的筛选条件
   const [filters, setFilters] = useState<PropertyFilters>({

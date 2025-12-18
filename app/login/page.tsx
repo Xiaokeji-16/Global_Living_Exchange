@@ -4,23 +4,11 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Moon, Sun } from "lucide-react";
 import { useRouter } from "next/navigation"; 
+import { useTheme} from "../hooks/useTheme"
  
 export default function LoginPage() {
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const root = window.document.documentElement;
-
-    if (theme === 'dark') {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
-  };    
+  const { theme, toggleTheme } = useTheme();
+  
 
   const router = useRouter();
   const [email, setEmail] = useState("");
