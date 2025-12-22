@@ -1,16 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";   // ✅ 加上 useEffect
 import { Menu, X, Moon, Sun } from "lucide-react";
 import Link from "next/link";
 
 interface HeaderProps {
   theme: "light" | "dark";
   toggleTheme: () => void;
-  /** 未登录(public) / 已登录(authed)，默认 public */
   variant?: "public" | "authed";
-  /** 如果需要自定义退出逻辑，可以传这个回调 */
   onLogoutClick?: () => void;
 }
 
@@ -22,6 +20,12 @@ export function Header({
 }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // ✅ 新增：只用于避免 hydration 问题
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const publicNavLinks = [
     { label: "Home", href: "/" },
     { label: "Property", href: "/properties" },
@@ -32,7 +36,7 @@ export function Header({
   const authedNavLinks = [
     { label: "Home", href: "/dashboard" },
     { label: "Property", href: "/properties" },
-    { label: "Upload home", href: "/upload-home" }, // 你后面可以改成真实路由
+    { label: "Upload home", href: "/upload-home" },
     { label: "My account", href: "/account" },
     { label: "Contact us", href: "/#contact" },
   ];
@@ -44,7 +48,15 @@ export function Header({
     if (onLogoutClick) {
       onLogoutClick();
     }
-    // 否则先什么都不做，后面你接入真实登出逻辑即可
+  };
+
+  // 一个小工具：根据 mounted + theme 返回当前要显示的图标
+  const renderThemeIcon = () => {
+    // 挂载前：统一显示 Moon（服务端 & 客户端首屏都一样）
+    if (!mounted) return <Moon size={18} />;
+
+    // 挂载后：根据 theme 切换
+    return theme === "light" ? <Moon size={18} /> : <Sun size={18} />;
   };
 
   return (
@@ -52,9 +64,10 @@ export function Header({
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link 
-            href='/'
-            className="flex-shrink-0 flex items-center gap-2">
+          <Link
+            href="/"
+            className="flex-shrink-0 flex items-center gap-2"
+          >
             <Image
               src="/icon/home_app_logo.svg"
               alt="Global Living Exchange Logo"
@@ -86,7 +99,7 @@ export function Header({
               className="p-2 text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-foreground))] transition-colors"
               aria-label="Toggle theme"
             >
-              {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
+              {renderThemeIcon()}
             </button>
 
             {isPublic ? (
@@ -122,7 +135,7 @@ export function Header({
               className="p-2 text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-foreground))] transition-colors"
               aria-label="Toggle theme"
             >
-              {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
+              {renderThemeIcon()}
             </button>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}

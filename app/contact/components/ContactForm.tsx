@@ -3,17 +3,58 @@
 
 import { useState, FormEvent } from "react";
 
+
 export function ContactForm() {
   const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async(e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitting(true);
+    setSuccess(null);
+    setError(null);
 
-    setTimeout(() => {
-      alert("Message sent! (demo)");
+    // 从表单 DOM 里拿数据（你已经有 name="fullName" 这些了）
+    const form = e.currentTarget;
+    
+    const formData = new FormData(form);
+    const fullName = (formData.get("fullName") || "").toString().trim();
+    const email = (formData.get("email") || "").toString().trim();
+    const topic = (formData.get("topic") || "").toString() || "other";
+    const message = (formData.get("message") || "").toString().trim();
+
+    if (!fullName || !email || !message) {
+      setError("Please fill in all required fields.");
       setSubmitting(false);
-    }, 800);
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: fullName,       // 🔁 后端那边叫 name
+          email,
+          messageType: topic,   // 🔁 后端那边叫 messageType
+          message,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error || "Failed to send message");
+      }
+
+      setSuccess("Thanks, we've received your message.");
+      // 提交成功后清空表单
+      form.reset();
+    } catch (err: any) {
+      setError(err.message || "Something went wrong. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -110,6 +151,17 @@ export function ContactForm() {
           {submitting ? "Sending..." : "Send message"}
         </button>
       </form>
+      {success && (
+        <p className="mt-3 text-sm text-emerald-400">
+          {success}
+        </p>
+      )}
+
+      {error && (
+        <p className="mt-2 text-sm text-red-400">
+          {error}
+        </p>
+      )}
     </section>
   );
 }
