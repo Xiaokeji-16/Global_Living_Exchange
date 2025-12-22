@@ -1,38 +1,54 @@
 // app/api/contact/route.ts
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
+import { supabaseServer } from "@/lib/supabase-server"; // 如果没有 @ 别名，就用相对路径
 
-export async function POST(req: Request) {
-  try {
-    const body = await req.json();
-    console.log("[CONTACT API] body =", body);
+export async function POST(req: NextRequest) {
+  // 1. 解析 body
+  const body = await req.json().catch(() => null);
 
-    const name = (body.name ?? "").toString().trim();
-    const email = (body.email ?? "").toString().trim();
-    const messageType = (body.messageType ?? "other").toString();
-    const message = (body.message ?? "").toString().trim();
-
-    // 只要求 name / email / message 不为空
-    if (!name || !email || !message) {
-      return NextResponse.json(
-        { ok: false, error: "Missing required fields" },
-        { status: 400 }
-      );
-    }
-
-    // TODO: 这里以后可以接 DB、发邮件等
-    console.log("[CONTACT API] valid payload:", {
-      name,
-      email,
-      messageType,
-      message,
-    });
-
-    return NextResponse.json({ ok: true });
-  } catch (err) {
-    console.error("[CONTACT API] JSON parse error:", err);
+  if (!body) {
     return NextResponse.json(
-      { ok: false, error: "Invalid request body" },
+      { ok: false, error: "Invalid JSON body" },
       { status: 400 }
     );
   }
+
+  const { name, email, messageType, message } = body;
+
+  // 2. 基础校验
+  if (!name || !email || !message) {
+    return NextResponse.json(
+      { ok: false, error: "Missing required fields" },
+      { status: 400 }
+    );
+  }
+
+  // 3. 写入 Supabase
+  const { data, error } = await supabaseServer
+    .from("contact_requests")      // 👈 你的表名
+    .insert([
+      {
+        name,
+        email,
+        message_type: messageType || "other", // 👈 对应表里的列名
+        message,
+      },
+    ])
+    .select()
+    .single();
+
+  // 4. 处理错误
+  if (error) {
+    console.error("Supabase insert error:", error);
+    return NextResponse.json(
+      { ok: false, error: error.message },
+      { status: 500 }
+    );
+  }
+
+  // 5. 成功返回
+  return NextResponse.json(
+    { ok: true, data },
+    { status: 200 }
+  );
 }
