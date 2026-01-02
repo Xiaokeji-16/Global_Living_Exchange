@@ -35,7 +35,7 @@ ${message}
 
   try {
     const { error } = await resend.emails.send({
-      from: "Global Living Exchange <no-reply@glexample.com>",
+      from: "Global Living Exchange <noboarding@resend.dev>",
       to: [toEmail],
       subject,
       text: plainText,
