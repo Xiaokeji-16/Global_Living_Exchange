@@ -1,3 +1,7 @@
+// app/components/TrustSection.tsx
+"use client";
+
+import Image from "next/image";
 import { ShieldCheck, Users, Headphones, BadgeCheck } from "lucide-react";
 
 export function TrustSection() {
@@ -7,11 +11,12 @@ export function TrustSection() {
       className="py-16 sm:py-20 lg:py-24 bg-[rgb(var(--color-background))]"
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid gap-10 lg:gap-16 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
-        {/* 左侧：标题 + 文案 + 数据 */}
-        <div>
+        {/* 左侧：标题 + 文案 + 数据 + 大图 */}
+        <div className="flex flex-col">
           <h2 className="text-2xl sm:text-3xl font-semibold text-[rgb(var(--color-foreground))]">
             Built on trust, operated with care
           </h2>
+
           <p className="mt-4 text-sm sm:text-base text-[rgb(var(--color-muted))] leading-relaxed">
             Unlike traditional home exchanges or rental platforms, we prioritize
             safety and authenticity. Every member is verified, every home is
@@ -45,9 +50,22 @@ export function TrustSection() {
               </dd>
             </div>
           </dl>
+
+          {/* 左下角大图 */}
+          <div className="mt-10 flex-1">
+            <div className="relative h-64 sm:h-72 w-full overflow-hidden rounded-3xl bg-[rgba(148,163,184,0.12)]">
+              <Image
+                src="/icon/cozy_home.jpg"  // public/icon/cozy_home.jpg
+                alt="Warm and inviting living room"
+                fill
+                className="h-full w-full object-cover"
+                sizes="(min-width: 1024px) 480px, 100vw"
+              />
+            </div>
+          </div>
         </div>
 
-        {/* 右侧：4 个 feature 卡片 */}
+        {/* 右侧：4 个 feature 卡片（保持原来的样式） */}
         <div className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2">
           {/* 1. Strict verification */}
           <div className="rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] p-4 sm:p-5 shadow-sm">
@@ -109,3 +127,5 @@ export function TrustSection() {
     </section>
   );
 }
+
+export default TrustSection;
