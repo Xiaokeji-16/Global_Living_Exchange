@@ -13,8 +13,10 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[rgb(var(--color-background))]">
-      <Header theme={theme} toggleTheme={toggleTheme} />
-      
+      <Header 
+        theme={theme} 
+        toggleTheme={toggleTheme}
+        variant="public" />
       
       <main>
         <div>

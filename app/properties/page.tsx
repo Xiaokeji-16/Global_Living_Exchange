@@ -1,22 +1,20 @@
 // app/properties/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Header } from "../components/Header";
+import { useTheme } from "../hooks/useTheme"
 
 // 这三个是你刚刚拆出去的组件
 import PropertySearchBar from "./components/PropertySearchBar";
 import PropertyListSection from "./components/PropertyListSection";
 import PointsMapSection from "./components/PointsMapSection";
-import { useTheme } from "../hooks/useTheme"
+
 import type { PropertyFilters } from "./lib/propertyData";
 
 export default function PropertiesPage() {
   // 主题（和首页保持一致）
   const { theme, toggleTheme } = useTheme();
-
-  
-
 
   // 当前生效的筛选条件
   const [filters, setFilters] = useState<PropertyFilters>({

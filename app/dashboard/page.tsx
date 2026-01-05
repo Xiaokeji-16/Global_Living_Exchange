@@ -26,6 +26,9 @@ export default function DashboardPage() {
         theme={theme}
         toggleTheme={toggleTheme}
         variant="authed"
+        onLogoutClick={() => {
+          console.log("logout clicked");
+        }}
       />
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8">

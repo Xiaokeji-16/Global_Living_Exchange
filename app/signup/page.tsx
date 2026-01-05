@@ -1,15 +1,16 @@
+// app/signup/page.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Moon, Sun } from "lucide-react";
 import Link from "next/link";
-import { useTheme } from "../hooks/useTheme"
+import { useRouter } from "next/navigation";
+import { useTheme } from "../hooks/useTheme";
 
 export default function SignupPage() {
-  // 主题状态（和 login 一样）
+  // 主题（和 login 一样）
   const { theme, toggleTheme } = useTheme();
-  
-
+  const router = useRouter();
 
   // 表单字段状态
   const [fullName, setFullName] = useState("");
@@ -18,7 +19,11 @@ export default function SignupPage() {
   const [country, setCountry] = useState("");
   const [city, setCity] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // 提交状态 & 错误提示
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!fullName || !email || !password) {
@@ -26,11 +31,40 @@ export default function SignupPage() {
       return;
     }
 
-    // 这里先做一个假的注册成功提示，后面再接后端
-    alert(`Mock signup success for: ${fullName} (${email})`);
+    setSubmitting(true);
+    setError(null);
 
-    // 例如：注册成功后跳到登录页
-    // router.push("/login");  // 以后接入 useRouter 再加
+    try {
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName,
+          email,
+          password,
+          country,
+          city,
+        }),
+      });
+
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok || !data?.ok) {
+        setError(
+          data?.error || "Failed to sign up. Please check your details and try again."
+        );
+        return;
+      }
+
+      // 真实注册成功
+      alert("Signup successful! You can now log in.");
+      router.push("/login");
+    } catch (err) {
+      console.error("[signup] client error:", err);
+      setError("Unexpected error. Please try again later.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -133,12 +167,20 @@ export default function SignupPage() {
               </div>
             </div>
 
+            {/* 错误提示 */}
+            {error && (
+              <p className="text-xs text-red-500 mt-1">
+                {error}
+              </p>
+            )}
+
             {/* 注册按钮 */}
             <button
               type="submit"
-              className="w-full mt-2 rounded-full bg-[rgb(var(--color-primary))] text-[rgb(var(--color-primary-foreground))] py-2.5 text-sm font-medium hover:opacity-90 transition-opacity"
+              disabled={submitting}
+              className="w-full mt-2 rounded-full bg-[rgb(var(--color-primary))] text-[rgb(var(--color-primary-foreground))] py-2.5 text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-60"
             >
-              Sign up
+              {submitting ? "Signing up..." : "Sign up"}
             </button>
           </form>
 

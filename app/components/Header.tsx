@@ -1,14 +1,17 @@
+// app/components/Header.tsx
 "use client";
 
 import Image from "next/image";
-import { useState, useEffect } from "react";   // ✅ 加上 useEffect
-import { Menu, X, Moon, Sun } from "lucide-react";
 import Link from "next/link";
+import { useState, useEffect } from "react";
+import { Menu, X, Moon, Sun } from "lucide-react";
 
 interface HeaderProps {
   theme: "light" | "dark";
   toggleTheme: () => void;
+  /** 顶部导航是游客版还是登录版 */
   variant?: "public" | "authed";
+  /** 点击 Logout 时的回调（以后可以在这里清理 token、跳转到 /login 等） */
   onLogoutClick?: () => void;
 }
 
@@ -20,12 +23,13 @@ export function Header({
 }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // ✅ 新增：只用于避免 hydration 问题
+  // 只用来避免 hydration 问题
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  // 游客版导航
   const publicNavLinks = [
     { label: "Home", href: "/" },
     { label: "Property", href: "/properties" },
@@ -33,12 +37,13 @@ export function Header({
     { label: "Contact us", href: "/contact" },
   ];
 
+  // 登录版导航（⚠️ 这里的 Property 指向 dashboard 里的列表页）
   const authedNavLinks = [
     { label: "Home", href: "/dashboard" },
-    { label: "Property", href: "/properties" },
-    { label: "Upload home", href: "/upload-home" },
-    { label: "My account", href: "/account" },
-    { label: "Contact us", href: "/#contact" },
+    { label: "Property", href: "/dashboard/properties" },
+    { label: "Upload home", href: "/upload-home" }, // 以后可以改成 /dashboard/upload-home
+    { label: "My account", href: "/account" },       // 以后可以改成 /dashboard/account
+    { label: "Contact us", href: "/contact" },
   ];
 
   const navLinks = variant === "authed" ? authedNavLinks : publicNavLinks;
@@ -50,12 +55,9 @@ export function Header({
     }
   };
 
-  // 一个小工具：根据 mounted + theme 返回当前要显示的图标
+  // 根据 mounted + theme 决定显示哪个图标
   const renderThemeIcon = () => {
-    // 挂载前：统一显示 Moon（服务端 & 客户端首屏都一样）
-    if (!mounted) return <Moon size={18} />;
-
-    // 挂载后：根据 theme 切换
+    if (!mounted) return <Moon size={18} />; // 首屏统一显示 Moon
     return theme === "light" ? <Moon size={18} /> : <Sun size={18} />;
   };
 
@@ -64,10 +66,7 @@ export function Header({
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link
-            href="/"
-            className="flex-shrink-0 flex items-center gap-2"
-          >
+          <Link href="/" className="flex-shrink-0 flex items-center gap-2">
             <Image
               src="/icon/home_app_logo.svg"
               alt="Global Living Exchange Logo"
