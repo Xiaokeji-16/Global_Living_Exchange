@@ -37,13 +37,13 @@ export function Header({
     { label: "Contact us", href: "/contact" },
   ];
 
-  // 登录版导航（⚠️ 这里的 Property 指向 dashboard 里的列表页）
+  // 登录版导航
   const authedNavLinks = [
     { label: "Home", href: "/dashboard" },
     { label: "Property", href: "/dashboard/properties" },
     { label: "Upload home", href: "/upload-home" }, // 以后可以改成 /dashboard/upload-home
     { label: "My account", href: "/account" },       // 以后可以改成 /dashboard/account
-    { label: "Contact us", href: "/contact" },
+    { label: "Contact us", href: "/dashboard/contact" },
   ];
 
   const navLinks = variant === "authed" ? authedNavLinks : publicNavLinks;
