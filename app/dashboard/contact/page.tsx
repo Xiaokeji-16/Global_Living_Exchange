@@ -5,14 +5,22 @@ import { Header } from "../../components/Header";
 import { useTheme } from "../../hooks/useTheme";
 // 👇 根据你 ContactForm 的实际位置调整路径
 import { ContactForm } from "../../contact/components/ContactForm";
+import { useLogout } from "../../hooks/useLogout";
 
 export default function DashboardContactPage() {
   const { theme, toggleTheme } = useTheme();
+  const handleLogout = useLogout();
+
 
   return (
     <div className="min-h-screen bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">
       {/* ✅ 登录版 Header，一定要加 variant="authed" */}
-      <Header theme={theme} toggleTheme={toggleTheme} variant="authed" />
+      <Header
+        theme={theme}
+        toggleTheme={toggleTheme}
+        variant="authed"
+        onLogoutClick={handleLogout}
+      />
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
         <section>

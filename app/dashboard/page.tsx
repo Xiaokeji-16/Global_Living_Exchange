@@ -8,6 +8,7 @@ import DashboardStatsRow from "./components/DashboardStatsRow";
 import DashboardUpcomingStays from "./components/DashboardUpcomingStays";
 import DashboardHomes from "./components/DashboardHomes";
 import DashboardTasks from "./components/DashboardTasks";
+import { useLogout } from "../hooks/useLogout";
 
 import {
   DASHBOARD_SUMMARY,
@@ -18,19 +19,18 @@ import {
 
 export default function DashboardPage() {
   const { theme, toggleTheme } = useTheme();
+  const handleLogout = useLogout();
 
   return (
     <div className="min-h-screen bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">
       {/* 顶部导航：登录后的版本 */}
-      <Header
-        theme={theme}
-        toggleTheme={toggleTheme}
-        variant="authed"
-        onLogoutClick={() => {
-          console.log("logout clicked");
-        }}
-      />
-
+    <Header
+      theme={theme}
+      toggleTheme={toggleTheme}
+      variant="authed"
+      onLogoutClick={handleLogout}
+    />
+      
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8">
         {/* 第一块：Welcome + Membership card */}
         <DashboardWelcome summary={DASHBOARD_SUMMARY} />
