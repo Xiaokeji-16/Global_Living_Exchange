@@ -42,7 +42,7 @@ export function Header({
     { label: "Home", href: "/dashboard" },
     { label: "Property", href: "/dashboard/properties" },
     { label: "Upload home", href: "/upload-home" }, // 以后可以改成 /dashboard/upload-home
-    { label: "My account", href: "/account" },       // 以后可以改成 /dashboard/account
+    { label: "My account", href: "/dashboard/account" },       // 以后可以改成 /dashboard/account
     { label: "Contact us", href: "/dashboard/contact" },
   ];
 
