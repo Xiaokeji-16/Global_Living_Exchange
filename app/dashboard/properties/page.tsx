@@ -41,7 +41,7 @@ export default function DashboardPropertiesPage() {
 
         {/* 左列表 + 右侧积分图 */}
         <section className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
-          <PropertyListSection filters={filters} />
+          <PropertyListSection filters={filters} mode="authed" />
           <PointsMapSection />
         </section>
       </main>

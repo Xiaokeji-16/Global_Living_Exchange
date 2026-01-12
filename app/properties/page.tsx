@@ -31,7 +31,7 @@ export default function PropertiesPage() {
 
         {/* 主体：左边列表 + 右边积分 map */}
         <section className="mt-8">
-          <PropertyListSection filters={filters} />
+          <PropertyListSection filters={filters} mode="public"/>
         </section>
       </main>
     </div>
