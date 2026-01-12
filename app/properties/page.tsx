@@ -5,11 +5,9 @@ import { useState } from "react";
 import { Header } from "../components/Header";
 import { useTheme } from "../hooks/useTheme"
 
-// 这三个是你刚刚拆出去的组件
-import PropertySearchBar from "./components/PropertySearchBar";
-import PropertyListSection from "./components/PropertyListSection";
-import PointsMapSection from "./components/PointsMapSection";
 
+import PropertySearchBar from "./components/PropertySearchBar";
+import PropertyListSection from "./components/PropertyListSection"
 import type { PropertyFilters } from "./lib/propertyData";
 
 export default function PropertiesPage() {
@@ -32,9 +30,8 @@ export default function PropertiesPage() {
         <PropertySearchBar filters={filters} onApply={setFilters} />
 
         {/* 主体：左边列表 + 右边积分 map */}
-        <section className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+        <section className="mt-8">
           <PropertyListSection filters={filters} />
-          <PointsMapSection />
         </section>
       </main>
     </div>
