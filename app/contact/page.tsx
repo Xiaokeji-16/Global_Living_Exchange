@@ -2,11 +2,11 @@
 "use client";
 
 import { Header } from "../components/Header";
-import { useTheme} from "../hooks/useTheme"
+import { useTheme } from "../hooks/useTheme";
 import { ContactIntro } from "./components/ContactIntro";
 import { ContactHelpList } from "./components/ContactHelpList";
 import { ContactMetaCards } from "./components/ContactMetaCards";
-import { ContactForm } from "./components/ContactForm";
+import FeedbackForm from "./components/FeedbackForm";
 
 export default function ContactPage() {
   const { theme, toggleTheme } = useTheme();
@@ -24,8 +24,9 @@ export default function ContactPage() {
             <ContactMetaCards />
           </section>
 
-          {/* 右侧：表单 */}
-          <ContactForm />
+          {/* 右侧：未登录版反馈表单 */}
+          <FeedbackForm mode="public" />
+          {/* 不写 mode 也行，因为默认是 "public" */}
         </div>
       </main>
     </div>

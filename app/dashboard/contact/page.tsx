@@ -3,8 +3,7 @@
 
 import { Header } from "../../components/Header";
 import { useTheme } from "../../hooks/useTheme";
-// 👇 根据你 ContactForm 的实际位置调整路径
-import { ContactForm } from "../../contact/components/ContactForm";
+import FeedbackForm from "../../contact/components/FeedbackForm";
 import { useLogout } from "../../hooks/useLogout";
 
 export default function DashboardContactPage() {
@@ -25,14 +24,14 @@ export default function DashboardContactPage() {
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
         <section>
           <h1 className="text-2xl sm:text-3xl font-semibold">
-            Contact us
+            Feedback
           </h1>
           <p className="mt-3 text-sm md:text-base text-[rgb(var(--color-muted))]">
             Tell us what you need and our team will get back to you.
           </p>
         </section>
 
-        <ContactForm />
+        <FeedbackForm mode="authed"/>
       </main>
     </div>
   );
