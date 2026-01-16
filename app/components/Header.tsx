@@ -4,7 +4,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Menu, X, Moon, Sun } from "lucide-react";
+import { Menu, X, Moon, Sun, User } from "lucide-react";
+import { UserButton} from "@clerk/nextjs";
 
 interface HeaderProps {
   theme: "light" | "dark";
@@ -41,8 +42,8 @@ export function Header({
   const authedNavLinks = [
     { label: "Home", href: "/dashboard" },
     { label: "Property", href: "/dashboard/properties" },
-    { label: "Upload home", href: "/upload-home" }, // 以后可以改成 /dashboard/upload-home
-    { label: "My account", href: "/dashboard/account" },       // 以后可以改成 /dashboard/account
+    { label: "Upload home", href: "/upload-home" }, 
+    { label: "My account", href: "/dashboard/account" },       
     { label: "Feedback", href: "/dashboard/contact" },
   ];
 
@@ -104,26 +105,29 @@ export function Header({
             {isPublic ? (
               <>
                 <Link
-                  href="/login"
+                  href="/sign-in"
                   className="text-base md:text-lg text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-primary))] transition-colors"
                 >
                   Log in
                 </Link>
                 <Link
-                  href="/signup"
+                  href="/sign-up"
                   className="px-6 py-2 bg-[rgb(var(--color-primary))] text-[rgb(var(--color-primary-foreground))] rounded-full hover:opacity-90 transition-opacity text-base md:text-lg font-medium"
                 >
                   Sign up
                 </Link>
               </>
             ) : (
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="text-base md:text-lg text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-primary))] transition-colors"
-              >
-                Logout
-              </button>
+              <>
+              <UserButton
+                afterSignOutUrl="/"
+                appearance={{
+                  elements: {
+                    avatarBox: "w-9 h-9 ",
+                  },
+                }}
+              />
+              </>
             )}
           </div>
 
@@ -165,14 +169,14 @@ export function Header({
                 {isPublic ? (
                   <>
                     <Link
-                      href="/login"
+                      href="/sign-in"
                       className="text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-primary))] transition-colors"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       Log in
                     </Link>
                     <Link
-                      href="/signup"
+                      href="/sign-up"
                       className="px-6 py-2 bg-[rgb(var(--color-primary))] text-[rgb(var(--color-primary-foreground))] rounded-full hover:opacity-90 transition-opacity text-center"
                       onClick={() => setMobileMenuOpen(false)}
                     >

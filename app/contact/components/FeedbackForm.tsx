@@ -2,6 +2,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type React from "react";
+import { useUser } from "@clerk/nextjs";
 import { supabase } from "@/lib/TS/supabaseClient";
 
 import FeedbackIdentitySection from "./FeedbackIdentitySection";
@@ -9,13 +11,16 @@ import FeedbackTopicField from "./FeedbackTopicField";
 import FeedbackMessageField from "./FeedbackMessageField";
 import FeedbackStatusBar from "./FeedbackStatusBar";
 
+// ✅ 组件 props：public = 游客版 /contact，authed = 登录版 /dashboard/contact
 type FeedbackFormProps = {
-  /** public = 未登录 /contact, authed = 登录版 /dashboard/contact */
   mode?: "public" | "authed";
 };
 
 export default function FeedbackForm({ mode = "public" }: FeedbackFormProps) {
   const isPublic = mode === "public";
+
+  // 从 Clerk 读当前用户
+  const { user } = useUser();
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -26,36 +31,29 @@ export default function FeedbackForm({ mode = "public" }: FeedbackFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  // ---------- 登录版：自动从 Supabase 获取当前用户 ----------
+  // ---------- 登录版：自动从 Clerk 填入姓名 / 邮箱 ----------
   useEffect(() => {
     if (mode !== "authed") return;
+    if (!user) return; // Clerk 还没加载好
 
-    const loadUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
-      if (error || !data.user) return;
+    const nameFromClerk =
+      user.fullName ||
+      `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim();
 
-      const user = data.user;
-      const meta = (user.user_metadata || {}) as Record<string, unknown>;
+    const emailFromClerk =
+      user.primaryEmailAddress?.emailAddress ?? "";
 
-      const nameFromMeta =
-        (meta.full_name as string | undefined) ||
-        (meta.name as string | undefined) ||
-        "";
-
-      setFullName(nameFromMeta);
-      setEmail(user.email ?? "");
-    };
-
-    loadUser();
-  }, [mode]);
+    if (nameFromClerk) setFullName(nameFromClerk);
+    if (emailFromClerk) setEmail(emailFromClerk);
+  }, [mode, user]);
 
   // ---------- 提交 ----------
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     setSuccess(null);
 
-    // 未登录版本才强制要求填 name / email
+    // 只有游客版才强制要求填 name / email
     if (isPublic) {
       if (!fullName.trim()) {
         setError("Please enter your name.");
@@ -68,11 +66,12 @@ export default function FeedbackForm({ mode = "public" }: FeedbackFormProps) {
     }
 
     if (!message.trim()) {
-      setError("Please tell us what you’d like to share.");
+      setError("Please tell us what you'd like to share.");
       return;
     }
 
     setSubmitting(true);
+
     try {
       const { error: insertError } = await supabase.from("feedback").insert({
         full_name: fullName || null,
@@ -86,7 +85,7 @@ export default function FeedbackForm({ mode = "public" }: FeedbackFormProps) {
       setSuccess("Thanks for your feedback!");
       setMessage("");
 
-      // public 版再清空姓名/邮箱；登录版保留
+      // 游客版清空姓名 / 邮箱；登录版保留（因为来自 Clerk）
       if (isPublic) {
         setFullName("");
         setEmail("");
@@ -101,7 +100,7 @@ export default function FeedbackForm({ mode = "public" }: FeedbackFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* 身份信息区域 */}
+      {/* 顶部：姓名 + 邮箱（登录版会自动填） */}
       <FeedbackIdentitySection
         mode={mode}
         fullName={fullName}
@@ -110,16 +109,16 @@ export default function FeedbackForm({ mode = "public" }: FeedbackFormProps) {
         onEmailChange={setEmail}
       />
 
-      {/* 主题 / 类型 */}
+      {/* 中间：选择类型 */}
       <FeedbackTopicField value={topic} onChange={setTopic} />
 
-      {/* 消息正文 */}
+      {/* 文本内容 */}
       <FeedbackMessageField value={message} onChange={setMessage} />
 
-      {/* 成功 / 错误提示 */}
+      {/* 状态提示 */}
       <FeedbackStatusBar error={error} success={success} />
 
-      {/* 提交按钮（如果你已经在某个组件里写了按钮，可以直接放那边） */}
+      {/* 提交按钮 */}
       <div className="pt-2">
         <button
           type="submit"

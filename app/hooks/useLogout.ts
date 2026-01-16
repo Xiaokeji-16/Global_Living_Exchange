@@ -2,16 +2,15 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useClerk } from "@clerk/nextjs";
 
 export function useLogout() {
   const router = useRouter();
+  const { signOut } = useClerk();
 
-  const logout = () => {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("gle_mock_user"); // 跟你登录时用的 key 对上
-    }
-    router.push("/");
+  return async () => {
+    await signOut(); // 调用 Clerk 的 signOut 方法
+    
+    router.push("/"); // 登出后重定向到首页
   };
-
-  return logout;
 }
