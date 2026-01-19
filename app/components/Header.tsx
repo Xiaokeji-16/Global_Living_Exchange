@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Menu, X, Moon, Sun, User } from "lucide-react";
 import { UserButton} from "@clerk/nextjs";
+import { useUser} from "@clerk/nextjs";
 
 interface HeaderProps {
   theme: "light" | "dark";
@@ -30,6 +31,10 @@ export function Header({
     setMounted(true);
   }, []);
 
+  // 从 Clerk 读当前用户，判断是否管理员
+  const { user } = useUser();
+  const isAdmin = user?.publicMetadata?.role === "admin";
+  
   // 游客版导航
   const publicNavLinks = [
     { label: "Home", href: "/" },
@@ -62,6 +67,7 @@ export function Header({
     return theme === "light" ? <Moon size={18} /> : <Sun size={18} />;
   };
 
+ 
   return (
     <header className="sticky top-0 z-50 bg-[rgb(var(--color-background))]/95 backdrop-blur border-b border-[rgb(var(--color-border))]">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
