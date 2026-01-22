@@ -11,7 +11,7 @@ import DashboardFavourites from "../components/DashboardFavourites";
 import DashboardPointsHistory from "../components/DashboardPointsHistory";
 import DashboardUpcomingStays from "../components/DashboardUpcomingStays";
 import DashboardTasks from "../components/DashboardTasks";
-
+import UserVerificationForm from "../components/UserVertificationForm";
 import { UPCOMING_STAYS, NEXT_STEP_TASKS } from "../lib/dashboardData";
 
 export default function DashboardAccountPage() {
@@ -41,7 +41,7 @@ export default function DashboardAccountPage() {
             upcoming stays and next steps for Global Living Exchange.
           </p>
         </section>
-
+        <UserVerificationForm />
         {/* 1. 左：我的房源收藏，右：积分流水 */}
         <section className="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
           <DashboardFavourites />

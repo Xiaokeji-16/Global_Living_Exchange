@@ -34,7 +34,7 @@ export function Header({
   // 从 Clerk 读当前用户，判断是否管理员
   const { user } = useUser();
   const isAdmin = user?.publicMetadata?.role === "admin";
-  
+
   // 游客版导航
   const publicNavLinks = [
     { label: "Home", href: "/" },
@@ -48,7 +48,7 @@ export function Header({
     { label: "Home", href: "/dashboard" },
     { label: "Property", href: "/dashboard/properties" },
     { label: "Upload home", href: "/upload-home" }, 
-    { label: "My account", href: "/dashboard/account" },       
+    { label: "Account", href: "/dashboard/account" },       
     { label: "Feedback", href: "/dashboard/contact" },
   ];
 
