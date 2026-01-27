@@ -3,15 +3,13 @@
 
 import { SignIn } from "@clerk/nextjs";
 
-export default function SignInPage() {
+export default function Page() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">
+    <div className="min-h-screen flex items-center justify-center">
       <SignIn
-        appearance={{
-          elements: {
-            card: "shadow-xl rounded-2xl",
-          },
-        }}
+        // 登录成功后，统一跳到 /post-auth 中转页面
+        afterSignInUrl="/post-auth"
+        afterSignUpUrl="/post-auth"
       />
     </div>
   );

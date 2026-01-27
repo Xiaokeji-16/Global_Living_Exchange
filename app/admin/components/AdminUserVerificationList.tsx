@@ -4,125 +4,168 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/TS/supabaseClient";
 
-type UserVerification = {
+// 审核状态类型（和你 Supabase 表里的约定保持一致）
+type VerificationStatus = "pending" | "approved" | "rejected";
+
+// 一条用户认证申请记录的类型（字段按你自己的表来改）
+export type VerificationRecord = {
   id: string;
-  clerk_user_id: string;
+  user_id: string;
+  full_name: string | null;
+  email: string | null;
+  country: string | null;        // 如果表里没有就删掉
+  message: string | null;        // 如果表里没有就删掉
+  status: VerificationStatus;
   created_at: string;
-  status: string;
-  doc_url: string | null;
-  note: string | null;
+  reviewed_at: string | null;
+  reviewed_by: string | null;
+  review_comment: string | null;
 };
 
 export default function AdminUserVerificationList() {
-  const [items, setItems] = useState<UserVerification[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [items, setItems] = useState<VerificationRecord[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [submittingId, setSubmittingId] = useState<string | null>(null);
 
-  const loadPending = async () => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from("user_verifications")
-      .select("*")
-      .eq("status", "pending")
-      .order("created_at", { ascending: true });
-
-    if (!error && data) setItems(data as UserVerification[]);
-    setLoading(false);
-  };
-
+  // 加载待审核列表
   useEffect(() => {
-    loadPending();
+    const load = async () => {
+      setLoading(true);
+      setError(null);
+
+      const { data, error } = await supabase
+        .from("user_verifications") // ✅ 这里只写表名
+        .select("*")                // ✅ 不要再写 <VerificationRecord>
+        .eq("status", "pending")
+        .order("created_at", { ascending: true });
+
+      if (error) {
+        console.error(error);
+        setError("Failed to load verification requests.");
+      } else {
+        // ✅ 在这里把返回的数据断言成 VerificationRecord[]
+        setItems((data ?? []) as VerificationRecord[]);
+      }
+
+      setLoading(false);
+    };
+
+    load();
   }, []);
 
-  const handleDecision = async (
+  // 通用的更新状态函数
+  const updateStatus = async (
     id: string,
-    decision: "approved" | "rejected"
+    status: VerificationStatus,
+    comment?: string
   ) => {
-    // 简单版：直接在前端改，之后可以换成 /api/admin route
+    setSubmittingId(id);
+    setError(null);
+
     const { error } = await supabase
       .from("user_verifications")
-      .update({ status: decision })
+      .update({
+        status,
+        review_comment: comment ?? null,
+        reviewed_at: new Date().toISOString(),
+      })
       .eq("id", id);
 
-    if (!error) {
-      setItems((prev) => prev.filter((i) => i.id !== id));
-    } else {
-      alert("Failed to update status");
+    setSubmittingId(null);
+
+    if (error) {
+      console.error(error);
+      setError("Failed to update request.");
+      return;
     }
+
+    // 审核完后，把这条记录从 pending 列表里移除
+    setItems((prev) => prev.filter((item) => item.id !== id));
   };
 
-  if (loading) {
-    return (
-      <section className="rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] p-4">
-        <h2 className="text-lg font-semibold mb-2">
-          Identity verifications
-        </h2>
-        <p className="text-sm text-[rgb(var(--color-muted))]">Loading…</p>
-      </section>
-    );
-  }
+  const handleApprove = (item: VerificationRecord) =>
+    updateStatus(item.id, "approved");
+
+  const handleReject = (item: VerificationRecord) =>
+    updateStatus(item.id, "rejected");
 
   return (
-    <section className="rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] p-4">
-      <h2 className="text-lg font-semibold mb-3">
-        Identity verifications
-      </h2>
+    <section className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold">Identity verifications</h2>
+      </div>
 
-      {items.length === 0 ? (
-        <p className="text-sm text-[rgb(var(--color-muted))]">
-          No pending identity verifications.
-        </p>
-      ) : (
-        <div className="space-y-3">
-          {items.map((item) => (
-            <div
-              key={item.id}
-              className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-background))] p-3"
-            >
-              <div className="space-y-1 text-sm">
-                <p className="font-medium">
-                  User ID:{" "}
-                  <span className="text-[rgb(var(--color-muted))]">
-                    {item.clerk_user_id}
-                  </span>
-                </p>
-                <p className="text-[rgb(var(--color-muted))]">
-                  Submitted at:{" "}
-                  {new Date(item.created_at).toLocaleString()}
-                </p>
-                {item.note && (
-                  <p className="text-[rgb(var(--color-muted))]">
-                    Note: {item.note}
+      <div className="rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))]">
+        {/* Loading 状态 */}
+        {loading && (
+          <div className="px-6 py-4 text-sm text-[rgb(var(--color-muted))]">
+            Loading requests…
+          </div>
+        )}
+
+        {/* 错误提示 */}
+        {!loading && error && (
+          <div className="px-6 py-4 text-sm text-red-500">{error}</div>
+        )}
+
+        {/* 空列表 */}
+        {!loading && !error && items.length === 0 && (
+          <div className="px-6 py-4 text-sm text-[rgb(var(--color-muted))]">
+            No pending identity verifications.
+          </div>
+        )}
+
+        {/* 有数据时的列表 */}
+        {!loading && !error && items.length > 0 && (
+          <ul className="divide-y divide-[rgb(var(--color-border))]">
+            {items.map((item) => (
+              <li
+                key={item.id}
+                className="px-6 py-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div>
+                  <p className="font-medium">
+                    {item.full_name || "Unnamed user"}
                   </p>
-                )}
-                {item.doc_url && (
-                  <a
-                    href={item.doc_url}
-                    target="_blank"
-                    className="text-xs text-[rgb(var(--color-primary))] underline"
-                  >
-                    View document
-                  </a>
-                )}
-              </div>
+                  <p className="text-xs text-[rgb(var(--color-muted))]">
+                    {item.email}
+                    {item.country ? ` · ${item.country}` : ""}
+                  </p>
+                  {item.message && (
+                    <p className="mt-1 text-xs text-[rgb(var(--color-muted))]">
+                      {item.message}
+                    </p>
+                  )}
+                  <p className="mt-1 text-[10px] text-[rgb(var(--color-muted))]">
+                    Submitted at{" "}
+                    {new Date(item.created_at).toLocaleString()}
+                  </p>
+                </div>
 
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handleDecision(item.id, "rejected")}
-                  className="px-3 py-1 rounded-full border border-[rgb(var(--color-border))] text-xs"
-                >
-                  Reject
-                </button>
-                <button
-                  onClick={() => handleDecision(item.id, "approved")}
-                  className="px-3 py-1 rounded-full bg-[rgb(var(--color-primary))] text-[rgb(var(--color-primary-foreground))] text-xs"
-                >
-                  Approve
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+                <div className="flex gap-2 mt-2 sm:mt-0">
+                  <button
+                    type="button"
+                    disabled={submittingId === item.id}
+                    onClick={() => handleApprove(item)}
+                    className="rounded-full px-3 py-1 text-xs font-medium bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-60"
+                  >
+                    {submittingId === item.id ? "Saving…" : "Approve"}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={submittingId === item.id}
+                    onClick={() => handleReject(item)}
+                    className="rounded-full px-3 py-1 text-xs font-medium border border-[rgb(var(--color-border))] text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-border))/20] disabled:opacity-60"
+                  >
+                    Reject
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </section>
   );
 }
