@@ -4,18 +4,25 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Menu, X, Moon, Sun, User } from "lucide-react";
-import { UserButton} from "@clerk/nextjs";
-import { useUser} from "@clerk/nextjs";
+import { Menu, X, Moon, Sun, ShieldCheck, Inbox } from "lucide-react";
 
 interface HeaderProps {
   theme: "light" | "dark";
   toggleTheme: () => void;
-  /** 顶部导航是游客版还是登录版 */
-  variant?: "public" | "authed";
-  /** 点击 Logout 时的回调（以后可以在这里清理 token、跳转到 /login 等） */
+  /**
+   * public  = 未登录
+   * authed  = 普通用户登录后的导航
+   * admin   = 管理端导航（User verification / Inbox）
+   */
+  variant?: "public" | "authed" | "admin";
   onLogoutClick?: () => void;
 }
+
+type NavItem = {
+  label: string;
+  href: string;
+  icon?: React.ReactNode;
+};
 
 export function Header({
   theme,
@@ -25,62 +32,68 @@ export function Header({
 }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // 只用来避免 hydration 问题
+  // 避免 hydration 问题
   const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // 从 Clerk 读当前用户，判断是否管理员
-  const { user } = useUser();
-  const isAdmin = user?.publicMetadata?.role === "admin";
+  useEffect(() => setMounted(true), []);
 
   // 游客版导航
-  const publicNavLinks = [
+  const publicNavLinks: NavItem[] = [
     { label: "Home", href: "/" },
     { label: "Property", href: "/properties" },
     { label: "About us", href: "/about" },
     { label: "Contact us", href: "/contact" },
   ];
 
-  // 登录版导航
-  const authedNavLinks = [
+  // 登录用户版导航
+  const authedNavLinks: NavItem[] = [
     { label: "Home", href: "/dashboard" },
     { label: "Property", href: "/dashboard/properties" },
-    { label: "Upload home", href: "/upload-home" }, 
-    { label: "Account", href: "/dashboard/account" },       
+    { label: "Upload home", href: "/upload-home" },
+    { label: "Account", href: "/dashboard/account" },
     { label: "Feedback", href: "/dashboard/contact" },
   ];
 
-  const navLinks = variant === "authed" ? authedNavLinks : publicNavLinks;
+  // 管理端导航
+  const adminNavLinks: NavItem[] = [
+    {
+      label: "Inbox",
+      href: "/admin/inbox",
+      icon: <Inbox size={16} className="mr-1.5" />,
+    },
+  ];
+
+  const navLinks =
+    variant === "admin"
+      ? adminNavLinks
+      : variant === "authed"
+      ? authedNavLinks
+      : publicNavLinks;
+
   const isPublic = variant === "public";
+  const isAdmin = variant === "admin";
 
   const handleLogout = () => {
-    if (onLogoutClick) {
-      onLogoutClick();
-    }
+    onLogoutClick?.();
   };
 
-  // 根据 mounted + theme 决定显示哪个图标
   const renderThemeIcon = () => {
-    if (!mounted) return <Moon size={18} />; // 首屏统一显示 Moon
+    if (!mounted) return <Moon size={18} />;
     return theme === "light" ? <Moon size={18} /> : <Sun size={18} />;
   };
 
- 
   return (
     <header className="sticky top-0 z-50 bg-[rgb(var(--color-background))]/95 backdrop-blur border-b border-[rgb(var(--color-border))]">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex-shrink-0 flex items-center gap-2">
+          <Link href={isAdmin ? "/admin" : "/"} className="flex items-center gap-2">
             <Image
               src="/icon/home_app_logo.svg"
               alt="Global Living Exchange Logo"
               width={45}
               height={45}
             />
-            <span className="flex-shrink-0 flex items-center gap-2 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--color-primary))]">
+            <span className="flex items-center gap-2 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--color-primary))]">
               Global Living Exchange
             </span>
           </Link>
@@ -91,8 +104,9 @@ export function Header({
               <Link
                 key={item.label}
                 href={item.href}
-                className="text-base md:text-lg text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-primary))] transition-colors"
+                className="flex items-center text-base md:text-lg text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-primary))] transition-colors"
               >
+                {item.icon}
                 {item.label}
               </Link>
             ))}
@@ -124,16 +138,20 @@ export function Header({
                 </Link>
               </>
             ) : (
-              <>
-              <UserButton
-                afterSignOutUrl="/"
-                appearance={{
-                  elements: {
-                    avatarBox: "w-9 h-9 ",
-                  },
-                }}
-              />
-              </>
+              <div className="flex items-center space-x-3">
+                {isAdmin && (
+                  <span className="text-xs font-semibold tracking-wide text-[rgb(var(--color-primary))] border border-[rgb(var(--color-primary))]/40 rounded-full px-3 py-1">
+                    ADMIN
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="text-base md:text-lg text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-primary))] transition-colors"
+                >
+                  Logout
+                </button>
+              </div>
             )}
           </div>
 
@@ -147,7 +165,7 @@ export function Header({
               {renderThemeIcon()}
             </button>
             <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              onClick={() => setMobileMenuOpen((open) => !open)}
               className="p-2 text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-foreground))] transition-colors"
               aria-label="Toggle menu"
             >
@@ -164,9 +182,10 @@ export function Header({
                 <Link
                   key={item.label}
                   href={item.href}
-                  className="text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-primary))] transition-colors"
+                  className="flex items-center text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-primary))] transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
+                  {item.icon}
                   {item.label}
                 </Link>
               ))}
