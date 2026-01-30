@@ -1,6 +1,7 @@
 // app/dashboard/page.tsx
 "use client";
 
+import { useEffect } from "react";               // ✅ 新增
 import { Header } from "../components/Header";
 import { useTheme } from "../hooks/useTheme";
 import { useLogout } from "../hooks/useLogout";
@@ -11,7 +12,7 @@ import DashboardUpcomingStays from "./components/DashboardUpcomingStays";
 import DashboardHomes from "./components/DashboardHomes";
 import DashboardTasks from "./components/DashboardTasks";
 
-// 新增的 My Account 相关区块
+// My Account 相关区块
 import DashboardProfileCard from "./components/DashboardProfileCard";
 import DashboardFavourites from "./components/DashboardFavourites";
 import DashboardPointsHistory from "./components/DashboardPointsHistory";
@@ -26,6 +27,15 @@ import {
 export default function DashboardPage() {
   const { theme, toggleTheme } = useTheme();
   const handleLogout = useLogout();
+
+  // ✅ 这里：进入 dashboard 时，确保 Supabase 里有一条 user_profile
+  useEffect(() => {
+    fetch("/api/profile/ensure", {
+      method: "POST",
+    }).catch((err) => {
+      console.error("ensure profile failed:", err);
+    });
+  }, []);
 
   return (
     <div className="min-h-screen bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">

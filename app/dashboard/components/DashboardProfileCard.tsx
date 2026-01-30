@@ -16,7 +16,7 @@ export default function DashboardProfileCard() {
 
     const load = async () => {
       const { data, error } = await supabase
-        .from("user_profiles")
+        .from("profiles")
         .select("is_verified")
         .eq("clerk_user_id", user.id)
         .maybeSingle();

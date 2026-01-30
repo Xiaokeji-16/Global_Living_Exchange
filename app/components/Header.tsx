@@ -4,7 +4,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Menu, X, Moon, Sun, ShieldCheck, Inbox } from "lucide-react";
+import { Menu, X, Moon, Sun, Inbox } from "lucide-react";
+import { UserButton,useUser} from "@clerk/nextjs";
 
 interface HeaderProps {
   theme: "light" | "dark";
@@ -12,7 +13,7 @@ interface HeaderProps {
   /**
    * public  = 未登录
    * authed  = 普通用户登录后的导航
-   * admin   = 管理端导航（User verification / Inbox）
+   * admin   = 管理端导航（Inbox 等）
    */
   variant?: "public" | "authed" | "admin";
   onLogoutClick?: () => void;
@@ -81,12 +82,52 @@ export function Header({
     return theme === "light" ? <Moon size={18} /> : <Sun size={18} />;
   };
 
+  function CustomFieldsPage() {
+  const { user, isLoaded } = useUser();
+  const [gender, setGender] = useState("");
+
+  useEffect(() => {
+    if (!isLoaded || !user) return;
+    setGender((user.unsafeMetadata?.gender as string) ?? "");
+  }, [isLoaded, user]);
+
+  if (!isLoaded) return null;
+  if (!user) return <div style={{ padding: 16 }}>未登录</div>;
+
+  return (
+    <div style={{ padding: 16 }}>
+      <div style={{ marginBottom: 8 }}>Gender</div>
+
+      <input
+        value={gender}
+        onChange={(e) => setGender(e.target.value)}
+        placeholder="male / female / other"
+      />
+
+      <button
+        style={{ marginLeft: 8 }}
+        onClick={async () => {
+          await user.update({
+            // 关键：unsafeMetadata 更新会覆盖旧对象，不会 merge，所以要手动合并
+            unsafeMetadata: { ...(user.unsafeMetadata ?? {}), gender },
+          });
+        }}
+      >
+        保存
+      </button>
+    </div>
+  );
+}
+
   return (
     <header className="sticky top-0 z-50 bg-[rgb(var(--color-background))]/95 backdrop-blur border-b border-[rgb(var(--color-border))]">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href={isAdmin ? "/admin" : "/"} className="flex items-center gap-2">
+          <Link
+            href={isAdmin ? "/admin" : "/"}
+            className="flex items-center gap-2"
+          >
             <Image
               src="/icon/home_app_logo.svg"
               alt="Global Living Exchange Logo"
@@ -139,11 +180,29 @@ export function Header({
               </>
             ) : (
               <div className="flex items-center space-x-3">
+                {/* Clerk 用户头像 */}
+                <UserButton
+                  appearance={{
+                    elements: {
+                      avatarBox: "w-8 h-8", // 桌面版头像大小
+                    },
+                  }}
+                >
+                  <UserButton.UserProfilePage
+                          label="自定义字段"
+                          url="custom-fields"
+                          labelIcon={<span>⚙️</span>}
+                        >
+                          <CustomFieldsPage />
+                        </UserButton.UserProfilePage>
+                </UserButton>
+
                 {isAdmin && (
                   <span className="text-xs font-semibold tracking-wide text-[rgb(var(--color-primary))] border border-[rgb(var(--color-primary))]/40 rounded-full px-3 py-1">
                     ADMIN
                   </span>
                 )}
+
                 <button
                   type="button"
                   onClick={handleLogout}
@@ -209,16 +268,26 @@ export function Header({
                     </Link>
                   </>
                 ) : (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      handleLogout();
-                      setMobileMenuOpen(false);
-                    }}
-                    className="text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-primary))] transition-colors text-left"
-                  >
-                    Logout
-                  </button>
+                  <div className="flex items-center justify-between">
+                    {/* 手机端也放一个小头像 */}
+                    <UserButton
+                      appearance={{
+                        elements: {
+                          avatarBox: "w-7 h-7",
+                        },
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleLogout();
+                        setMobileMenuOpen(false);
+                      }}
+                      className="text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-primary))] transition-colors text-left"
+                    >
+                      Logout
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
