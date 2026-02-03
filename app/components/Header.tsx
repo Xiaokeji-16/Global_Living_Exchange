@@ -4,8 +4,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Menu, X, Moon, Sun, Inbox } from "lucide-react";
-import { UserButton,useUser} from "@clerk/nextjs";
+import { UserButton } from "@clerk/nextjs";
+import CustomFieldsPage from "@/app/components/CustomFieldsPage";
+import { Menu, X, Moon, Sun, Inbox, Sparkles } from "lucide-react";
 
 interface HeaderProps {
   theme: "light" | "dark";
@@ -82,42 +83,26 @@ export function Header({
     return theme === "light" ? <Moon size={18} /> : <Sun size={18} />;
   };
 
-  function CustomFieldsPage() {
-  const { user, isLoaded } = useUser();
-  const [gender, setGender] = useState("");
-
-  useEffect(() => {
-    if (!isLoaded || !user) return;
-    setGender((user.unsafeMetadata?.gender as string) ?? "");
-  }, [isLoaded, user]);
-
-  if (!isLoaded) return null;
-  if (!user) return <div style={{ padding: 16 }}>未登录</div>;
-
-  return (
-    <div style={{ padding: 16 }}>
-      <div style={{ marginBottom: 8 }}>Gender</div>
-
-      <input
-        value={gender}
-        onChange={(e) => setGender(e.target.value)}
-        placeholder="male / female / other"
-      />
-
-      <button
-        style={{ marginLeft: 8 }}
-        onClick={async () => {
-          await user.update({
-            // 关键：unsafeMetadata 更新会覆盖旧对象，不会 merge，所以要手动合并
-            unsafeMetadata: { ...(user.unsafeMetadata ?? {}), gender },
-          });
-        }}
+  // 把带自定义 tab 的 UserButton 抽成一个小组件，桌面 / 手机都复用
+  const RenderUserButton = () => (
+    <UserButton
+      appearance={{
+        elements: {
+          avatarBox: "w-8 h-8", // 桌面版大小，手机那边可以覆盖
+          userButtonPopoverCard: "w-[480px]", // 让弹窗宽一点（可选）
+        },
+      }}
+    >
+      {/* 自定义 tab：自定义字段 */}
+      <UserButton.UserProfilePage
+        label="Preference"
+        url="custom-fields"
+        labelIcon={<Sparkles size={14} />}
       >
-        保存
-      </button>
-    </div>
+        <CustomFieldsPage />
+      </UserButton.UserProfilePage>
+    </UserButton>
   );
-}
 
   return (
     <header className="sticky top-0 z-50 bg-[rgb(var(--color-background))]/95 backdrop-blur border-b border-[rgb(var(--color-border))]">
@@ -180,22 +165,8 @@ export function Header({
               </>
             ) : (
               <div className="flex items-center space-x-3">
-                {/* Clerk 用户头像 */}
-                <UserButton
-                  appearance={{
-                    elements: {
-                      avatarBox: "w-8 h-8", // 桌面版头像大小
-                    },
-                  }}
-                >
-                  <UserButton.UserProfilePage
-                          label="自定义字段"
-                          url="custom-fields"
-                          labelIcon={<span>⚙️</span>}
-                        >
-                          <CustomFieldsPage />
-                        </UserButton.UserProfilePage>
-                </UserButton>
+                {/* Clerk 用户头像 + 自定义字段 tab */}
+                <RenderUserButton />
 
                 {isAdmin && (
                   <span className="text-xs font-semibold tracking-wide text-[rgb(var(--color-primary))] border border-[rgb(var(--color-primary))]/40 rounded-full px-3 py-1">
@@ -269,14 +240,25 @@ export function Header({
                   </>
                 ) : (
                   <div className="flex items-center justify-between">
-                    {/* 手机端也放一个小头像 */}
+                    {/* 手机端也用同一个 UserButton（带自定义字段 tab） */}
                     <UserButton
                       appearance={{
                         elements: {
                           avatarBox: "w-7 h-7",
+                          userButtonPopoverCard: "w-[480px]",
                         },
                       }}
-                    />
+                    >
+                      <UserButton.UserProfilePage
+                        label="Preference"
+                        url="custom-fields"
+                        labelIcon={<Sparkles size={14} />}
+                      >
+                     <CustomFieldsPage />
+                      </UserButton.UserProfilePage>
+                    </UserButton>
+                      
+
                     <button
                       type="button"
                       onClick={() => {
