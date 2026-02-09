@@ -95,9 +95,9 @@ export function FeaturedHomesSection() {
   return (
     <section
       id="properties"
-      className="py-16 sm:py-20 lg:py-24 bg-[rgb(var(--color-background))]"
+      className="px-4 sm:px-6 lg:px-8"
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
         {/* 标题 */}
         <div className="text-center mb-10 sm:mb-12">
           <h2 className="text-2xl sm:text-3xl font-semibold text-[rgb(var(--color-foreground))]">
@@ -116,7 +116,7 @@ export function FeaturedHomesSection() {
               key={home.id}
               className="group overflow-hidden rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] shadow-sm flex flex-col transition-transform duration-200 hover:-translate-y-1 hover:shadow-xl"
             >
-              {/* 图片 + Verified badge */}
+              {/* 图片 + Verified badge - 绿色透明风格 */}
               <div className="relative aspect-[4/3] w-full overflow-hidden">
                 <Image
                   src={home.imageSrc}
@@ -125,9 +125,9 @@ export function FeaturedHomesSection() {
                   className="object-cover transition-transform duration-300 group-hover:scale-105"
                 />
 
-                <div className="absolute top-3 right-3 inline-flex items-center gap-1 rounded-full bg-[rgb(var(--color-card))]/90 px-3 py-1 text-xs font-medium shadow-md border border-[rgb(var(--color-border))]">
-                  <ShieldCheck className="w-3 h-3 text-[rgb(var(--color-primary))]" />
-                  <span className="text-[rgb(var(--color-foreground))]">
+                <div className="absolute top-3 right-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-100/90 dark:bg-emerald-900/80 backdrop-blur-sm px-3 py-1 text-xs font-semibold shadow-sm border border-emerald-200 dark:border-emerald-700">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                  <span className="text-emerald-700 dark:text-emerald-300">
                     Verified
                   </span>
                 </div>

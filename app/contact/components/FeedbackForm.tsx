@@ -4,7 +4,6 @@
 import { useEffect, useState } from "react";
 import type React from "react";
 import { useUser } from "@clerk/nextjs";
-import { supabase } from "@/lib/TS/supabaseClient";
 
 import FeedbackIdentitySection from "./FeedbackIdentitySection";
 import FeedbackTopicField from "./FeedbackTopicField";
@@ -73,14 +72,28 @@ export default function FeedbackForm({ mode = "public" }: FeedbackFormProps) {
     setSubmitting(true);
 
     try {
-      const { error: insertError } = await supabase.from("feedback").insert({
-        full_name: fullName || null,
-        email: email || null,
-        message_type: topic,
-        message,
+      // ✅ 使用 contact API（统一处理，有触发器和邮件通知）
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: fullName.trim(),
+          email: email.trim(),
+          messageType: topic,
+          message: message.trim(),
+        }),
       });
 
-      if (insertError) throw insertError;
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        throw new Error(data?.error || "Failed to send feedback");
+      }
+
+      const data = await response.json();
+      
+      if (!data.ok) {
+        throw new Error(data.error || "Failed to send feedback");
+      }
 
       setSuccess("Thanks for your feedback!");
       setMessage("");
@@ -91,8 +104,8 @@ export default function FeedbackForm({ mode = "public" }: FeedbackFormProps) {
         setEmail("");
       }
     } catch (err) {
-      console.error(err);
-      setError("Something went wrong, please try again.");
+      console.error("Feedback submission error:", err);
+      setError(err instanceof Error ? err.message : "Something went wrong, please try again.");
     } finally {
       setSubmitting(false);
     }

@@ -3,90 +3,185 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Moon, Sun, ShieldCheck, Inbox } from "lucide-react";
+import { useState, useEffect } from "react";
+import { UserButton } from "@clerk/nextjs";
+import CustomFieldsPage from "@/app/components/CustomFieldsPage";
+import { Menu, X, Moon, Sun, Inbox, Sparkles, LayoutDashboard } from "lucide-react";
 
-type AdminHeaderProps = {
+interface AdminHeaderProps {
   theme: "light" | "dark";
   toggleTheme: () => void;
-  onLogoutClick: () => void;
-  userName?: string | null;
-};
+  onLogoutClick?: () => void;
+}
 
 export default function AdminHeader({
   theme,
   toggleTheme,
   onLogoutClick,
-  userName,
 }: AdminHeaderProps) {
-  const isDark = theme === "dark";
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
+
+  const adminNavLinks = [
+    {
+      label: "Dashboard",
+      href: "/admin",
+      icon: <LayoutDashboard size={16} className="mr-1.5" />,
+    },
+    {
+      label: "Inbox",
+      href: "/admin/inbox",
+      icon: <Inbox size={16} className="mr-1.5" />,
+    },
+  ];
+
+  const renderThemeIcon = () => {
+    if (!mounted) return <Moon size={18} />;
+    return theme === "light" ? <Moon size={18} /> : <Sun size={18} />;
+  };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[rgb(var(--color-border))] bg-[rgb(var(--color-background))]/95 backdrop-blur">
-      <nav className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* 左侧：Logo + 顶部导航 */}
-        <div className="flex items-center gap-4">
-          <Link href="/" className="flex items-center gap-2">
+    <header className="sticky top-0 z-50 bg-[rgb(var(--color-background))]/95 backdrop-blur border-b border-[rgb(var(--color-border))]">
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <Link href="/admin" className="flex items-center gap-2">
             <Image
               src="/icon/home_app_logo.svg"
               alt="Global Living Exchange Logo"
-              width={28}
-              height={28}
+              width={45}
+              height={45}
             />
-            <span className="text-sm font-medium text-[rgb(var(--color-muted))]">
+            <span className="flex items-center gap-2 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--color-primary))]">
               Global Living Exchange
             </span>
           </Link>
 
-          <span className="hidden h-4 w-px bg-[rgb(var(--color-border))] sm:block" />
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-8">
+            {adminNavLinks.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className="flex items-center text-base md:text-lg text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-primary))] transition-colors"
+              >
+                {item.icon}
+                {item.label}
+              </Link>
+            ))}
+          </div>
 
-          {/* 顶部导航：User verification + Inbox */}
-          <div className="hidden items-center gap-3 md:flex text-xs font-medium">
-            <a
-              href="#identity"
-              className="inline-flex items-center gap-1 rounded-full border border-transparent px-3 py-1 text-[rgb(var(--color-muted))] hover:border-[rgb(var(--color-primary))]/40 hover:bg-[rgb(var(--color-primary))]/5 hover:text-[rgb(var(--color-foreground))] transition-colors"
+          {/* Desktop Actions */}
+          <div className="hidden md:flex items-center space-x-4">
+            <button
+              onClick={toggleTheme}
+              className="p-2 text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-foreground))] transition-colors"
+              aria-label="Toggle theme"
             >
-              {/* 这里把原来的 Admin console 图标放到 User verification 前面 */}
-              <ShieldCheck className="h-3.5 w-3.5 text-[rgb(var(--color-primary))]" />
-              <span>User verification</span>
-            </a>
+              {renderThemeIcon()}
+            </button>
 
-            <a
-              href="#inbox"
-              className="inline-flex items-center gap-1 rounded-full border border-transparent px-3 py-1 text-[rgb(var(--color-muted))] hover:border-[rgb(var(--color-primary))]/40 hover:bg-[rgb(var(--color-primary))]/5 hover:text-[rgb(var(--color-foreground))] transition-colors"
+            <div className="flex items-center space-x-3">
+              <UserButton
+                appearance={{
+                  elements: {
+                    avatarBox: "w-8 h-8",
+                    userButtonPopoverCard: "w-[480px]",
+                  },
+                }}
+              >
+                <UserButton.UserProfilePage
+                  label="Preference"
+                  url="custom-fields"
+                  labelIcon={<Sparkles size={14} />}
+                >
+                  <CustomFieldsPage />
+                </UserButton.UserProfilePage>
+              </UserButton>
+
+              <span className="text-xs font-semibold tracking-wide text-[rgb(var(--color-primary))] border border-[rgb(var(--color-primary))]/40 rounded-full px-3 py-1">
+                ADMIN
+              </span>
+
+              <button
+                type="button"
+                onClick={onLogoutClick}
+                className="text-base md:text-lg text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-primary))] transition-colors"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <div className="md:hidden flex items-center space-x-2">
+            <button
+              onClick={toggleTheme}
+              className="p-2 text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-foreground))] transition-colors"
+              aria-label="Toggle theme"
             >
-              <Inbox className="h-3.5 w-3.5" />
-              <span>Inbox</span>
-            </a>
+              {renderThemeIcon()}
+            </button>
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-foreground))] transition-colors"
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
           </div>
         </div>
 
-        {/* 右侧：主题切换 + 当前用户 + Admin badge + 登出 */}
-        <div className="flex items-center gap-3">
-          <button
-            onClick={toggleTheme}
-            className="rounded-full p-1.5 text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-foreground))] transition-colors"
-            aria-label="Toggle theme"
-          >
-            {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          </button>
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden py-4 border-t border-[rgb(var(--color-border))]">
+            <div className="flex flex-col space-y-3">
+              {adminNavLinks.map((item) => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className="flex items-center text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-primary))] transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {item.icon}
+                  {item.label}
+                </Link>
+              ))}
 
-          <div className="hidden items-center gap-2 sm:flex">
-            <span className="max-w-[140px] truncate text-sm text-[rgb(var(--color-muted))]">
-              {userName ?? "Admin user"}
-            </span>
-            <span className="inline-flex items-center rounded-full bg-[rgb(var(--color-primary))/10] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[rgb(var(--color-primary))]">
-              Admin
-            </span>
+              <div className="pt-3 flex items-center justify-between border-t border-[rgb(var(--color-border))]">
+                <UserButton
+                  appearance={{
+                    elements: {
+                      avatarBox: "w-7 h-7",
+                      userButtonPopoverCard: "w-[480px]",
+                    },
+                  }}
+                >
+                  <UserButton.UserProfilePage
+                    label="Preference"
+                    url="custom-fields"
+                    labelIcon={<Sparkles size={14} />}
+                  >
+                    <CustomFieldsPage />
+                  </UserButton.UserProfilePage>
+                </UserButton>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    onLogoutClick?.();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-primary))] transition-colors"
+                >
+                  Logout
+                </button>
+              </div>
+            </div>
           </div>
-
-          <button
-            type="button"
-            onClick={onLogoutClick}
-            className="rounded-full border border-[rgb(var(--color-border))] px-3 py-1 text-xs font-medium text-[rgb(var(--color-foreground))] hover:border-[rgb(var(--color-primary))] hover:text-[rgb(var(--color-primary))] transition-colors"
-          >
-            Logout
-          </button>
-        </div>
+        )}
       </nav>
     </header>
   );

@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, MapPin, BedDouble, Users as UsersIcon } from "lucide-react";
+import { Heart, MapPin, BedDouble, Users as UsersIcon, ShieldCheck } from "lucide-react";
 import type { Property } from "../lib/propertyData";
 
 type PropertyCardProps = {
@@ -42,9 +42,10 @@ export default function PropertyCard({ property, href }: PropertyCardProps) {
           <Heart className="w-4 h-4" />
         </button>
 
-        {/* VERIFIED 徽标 */}
+        {/* VERIFIED 徽标 - 绿色透明风格 + 图标 */}
         {verified && (
-          <span className="absolute right-3 top-3 rounded-full bg-[rgb(var(--color-primary))] px-3 py-1 text-xs font-medium text-[rgb(var(--color-primary-foreground))] shadow">
+          <span className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-100/90 dark:bg-emerald-900/80 backdrop-blur-sm px-3 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-300 shadow-sm border border-emerald-200 dark:border-emerald-700">
+            <ShieldCheck className="w-3.5 h-3.5" />
             VERIFIED
           </span>
         )}

@@ -1,4 +1,4 @@
-// app/dashboard/account/components/UserVerificationForm.tsx
+// app/dashboard/components/UserVerificationForm.tsx
 "use client";
 
 import { useState } from "react";
@@ -6,7 +6,6 @@ import { supabase } from "@/lib/TS/supabaseClient";
 import { useUser } from "@clerk/nextjs";
 
 type Props = {
-  /** 如果已经有一条记录，可以传进来决定是否显示“已提交/已通过”状态 */
   existingStatus?: "pending" | "approved" | "rejected" | null;
 };
 
@@ -23,7 +22,6 @@ export default function UserVerificationForm({ existingStatus = null }: Props) {
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // 如果已经通过 / 已提交，可以在这里直接 return 一段状态 UI
   if (existingStatus === "approved") {
     return (
       <div className="rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] p-6">
@@ -71,30 +69,65 @@ export default function UserVerificationForm({ existingStatus = null }: Props) {
 
     setSubmitting(true);
     try {
-      const { error: insertError } = await supabase
+      console.log("=== Starting verification submission ===");
+      console.log("User ID:", user.id);
+      console.log("Full name:", fullName.trim());
+      console.log("Country:", country.trim());
+      console.log("Document type:", documentType);
+      console.log("Document number:", documentNumber.trim());
+
+      const insertData = {
+        clerk_user_id: user.id,
+        full_name: fullName.trim(),
+        country: country.trim(),
+        document_type: documentType,
+        document_number: documentNumber.trim(),
+        note: notes.trim() || null,
+        status: "pending",
+      };
+
+      console.log("Insert data:", insertData);
+
+      const { data, error: insertError } = await supabase
         .from("user_verifications")
-        .insert({
-          user_id: user.id,            // Clerk user id
-          full_name: fullName.trim(),
-          country: country.trim(),
-          document_type: documentType, // 'passport' | 'id_card' | ...
-          document_number: documentNumber.trim(),
-          // extra note 给 reviewer
-          review_comment: null,        // 审核时再写
-        });
+        .insert(insertData)
+        .select();
 
-      if (insertError) throw insertError;
+      console.log("Supabase response - data:", data);
+      console.log("Supabase response - error:", insertError);
 
-      setSuccess("Verification submitted. We’ll review your information soon.");
-      // 清掉表单
+      if (insertError) {
+        console.error("=== Insert Error Details ===");
+        console.error("Code:", insertError.code);
+        console.error("Message:", insertError.message);
+        console.error("Details:", insertError.details);
+        console.error("Hint:", insertError.hint);
+        console.error("Full error:", JSON.stringify(insertError, null, 2));
+        
+        throw new Error(insertError.message || "Unknown database error");
+      }
+
+      console.log("=== Verification submitted successfully ===");
+      setSuccess("Verification submitted. We'll review your information soon.");
+      
+      // 清空表单
       setFullName("");
       setCountry("");
       setDocumentType("passport");
       setDocumentNumber("");
       setNotes("");
     } catch (err) {
-      console.error(err);
-      setError("Failed to submit verification. Please try again.");
+      console.error("=== Catch block error ===");
+      console.error("Error type:", typeof err);
+      console.error("Error:", err);
+      console.error("Error string:", String(err));
+      console.error("Error JSON:", JSON.stringify(err, Object.getOwnPropertyNames(err)));
+      
+      if (err instanceof Error) {
+        setError(`Failed to submit: ${err.message}`);
+      } else {
+        setError("Failed to submit verification. Please check the console for details.");
+      }
     } finally {
       setSubmitting(false);
     }
@@ -159,7 +192,7 @@ export default function UserVerificationForm({ existingStatus = null }: Props) {
           />
         </div>
 
-        {/* Optional note 给审核员看的说明，这里我们暂时存到 extra_message，或者你已经有相应字段就改成那个 */}
+        {/* Optional note */}
         <div className="space-y-1.5">
           <label className="block text-sm font-medium">
             Notes for reviewer (optional)
@@ -175,14 +208,18 @@ export default function UserVerificationForm({ existingStatus = null }: Props) {
 
         {/* 错误 / 成功提示 */}
         {error && (
-          <p className="text-sm text-red-500">
-            {error}
-          </p>
+          <div className="rounded-lg bg-red-50 dark:bg-red-900/10 p-3">
+            <p className="text-sm text-red-600 dark:text-red-400">
+              {error}
+            </p>
+          </div>
         )}
         {success && (
-          <p className="text-sm text-emerald-600">
-            {success}
-          </p>
+          <div className="rounded-lg bg-emerald-50 dark:bg-emerald-900/10 p-3">
+            <p className="text-sm text-emerald-600 dark:text-emerald-400">
+              {success}
+            </p>
+          </div>
         )}
 
         <div className="pt-2">

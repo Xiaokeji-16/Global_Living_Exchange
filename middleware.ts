@@ -3,12 +3,16 @@ import { clerkMiddleware } from "@clerk/nextjs/server";
 
 export default clerkMiddleware();
 
-// 这里配置哪些路径要经过 Clerk（也就是可以在里面用 currentUser、auth）
+// Clerk 中间件配置，指定哪些路径需要进行身份验证和授权检查
 export const config = {
   matcher: [
     "/dashboard/:path*",      // 用户个人控制台
     "/upload-home/:path*",    // 上传房源
-    "/admin/:path*",          // 管理端
-    "/api/profile/:path*",    // 我们刚刚写的 profile ensure API
+    "/admin/:path*",          // 管理端页面
+    "/api/profile/:path*",    // profile API
+    "/api/admin/:path*",      // 管理端 API (新增这行！)
+    
+    // 包含所有 API 和 trpc 路由
+    "/(api|trpc)(.*)",
   ],
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import { useTheme} from "./hooks/useTheme"
+import { useTheme } from "./hooks/useTheme";
 import { Header } from './components/Header';
 import { Hero } from "./components/Hero";
 import { HowItWorksSection } from "./components/HowtoworkSection";
@@ -10,7 +10,6 @@ import { TrustSection } from "./components/TrustSection";
 export default function App() {
   const { theme, toggleTheme } = useTheme();
 
-
   return (
     <div className="min-h-screen bg-[rgb(var(--color-background))]">
       <Header 
@@ -19,26 +18,13 @@ export default function App() {
         variant="public" />
       
       <main>
-        <div>
+        <div className="space-y-16 md:space-y-24 lg:space-y-32">
           <Hero />
           <HowItWorksSection />
           <FeaturedHomesSection />
           <TrustSection />
-          <section id="hero">
-            {/* Hero Section Content */}
-          </section>
-          <section id="properties">
-            
-          </section>
-          <section id="about">
-            {/* Hero Section Content */}
-          </section>
-          <section id="contact">
-            {/* Hero Section Content */}
-          </section>
         </div>
       </main>
     </div>
   );
 }
-

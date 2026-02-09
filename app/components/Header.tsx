@@ -6,7 +6,8 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { UserButton } from "@clerk/nextjs";
 import CustomFieldsPage from "@/app/components/CustomFieldsPage";
-import { Menu, X, Moon, Sun, Inbox, Sparkles } from "lucide-react";
+import { Menu, X, Moon, Sun, Sparkles } from "lucide-react";
+import AdminHeader from "@/app/admin/components/AdminHeader";
 
 interface HeaderProps {
   theme: "light" | "dark";
@@ -32,6 +33,17 @@ export function Header({
   variant = "public",
   onLogoutClick,
 }: HeaderProps) {
+  // 如果是管理员模式，直接使用 AdminHeader
+  if (variant === "admin") {
+    return (
+      <AdminHeader
+        theme={theme}
+        toggleTheme={toggleTheme}
+        onLogoutClick={onLogoutClick}
+      />
+    );
+  }
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // 避免 hydration 问题
@@ -48,31 +60,15 @@ export function Header({
 
   // 登录用户版导航
   const authedNavLinks: NavItem[] = [
-    { label: "Home", href: "/dashboard" },
+    { label: "Dashboard", href: "/dashboard" },
     { label: "Property", href: "/dashboard/properties" },
     { label: "Upload home", href: "/upload-home" },
-    { label: "Account", href: "/dashboard/account" },
     { label: "Feedback", href: "/dashboard/contact" },
   ];
 
-  // 管理端导航
-  const adminNavLinks: NavItem[] = [
-    {
-      label: "Inbox",
-      href: "/admin/inbox",
-      icon: <Inbox size={16} className="mr-1.5" />,
-    },
-  ];
-
-  const navLinks =
-    variant === "admin"
-      ? adminNavLinks
-      : variant === "authed"
-      ? authedNavLinks
-      : publicNavLinks;
+  const navLinks = variant === "authed" ? authedNavLinks : publicNavLinks;
 
   const isPublic = variant === "public";
-  const isAdmin = variant === "admin";
 
   const handleLogout = () => {
     onLogoutClick?.();
@@ -110,7 +106,7 @@ export function Header({
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link
-            href={isAdmin ? "/admin" : "/"}
+            href="/"
             className="flex items-center gap-2"
           >
             <Image
@@ -167,12 +163,6 @@ export function Header({
               <div className="flex items-center space-x-3">
                 {/* Clerk 用户头像 + 自定义字段 tab */}
                 <RenderUserButton />
-
-                {isAdmin && (
-                  <span className="text-xs font-semibold tracking-wide text-[rgb(var(--color-primary))] border border-[rgb(var(--color-primary))]/40 rounded-full px-3 py-1">
-                    ADMIN
-                  </span>
-                )}
 
                 <button
                   type="button"

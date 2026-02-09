@@ -1,8 +1,8 @@
 // app/properties/components/PropertySearchBar.tsx
 "use client";
 
-import { useState, useEffect, type FormEvent } from "react";
-import { Search, Calendar, Users as UsersIcon } from "lucide-react";
+import { useState, useEffect, useRef, type FormEvent } from "react";
+import { Search, Calendar, Users, Home, Coins, SlidersHorizontal, X } from "lucide-react";
 import type { PropertyFilters } from "../lib/propertyData";
 
 type Props = {
@@ -13,11 +13,43 @@ type Props = {
 export default function PropertySearchBar({ filters, onApply }: Props) {
   // 本地表单状态
   const [localFilters, setLocalFilters] = useState<PropertyFilters>(filters);
+  
+  // 下拉菜单状态
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showGuestPicker, setShowGuestPicker] = useState(false);
+  const [showMoreFilters, setShowMoreFilters] = useState(false);
+  
+  // 日期和人数的临时状态
+  const [dateRange, setDateRange] = useState({ checkIn: "", checkOut: "" });
+  const [guests, setGuests] = useState(1);
+
+  // Refs for click outside
+  const datePickerRef = useRef<HTMLDivElement>(null);
+  const guestPickerRef = useRef<HTMLDivElement>(null);
+  const moreFiltersRef = useRef<HTMLDivElement>(null);
 
   // 外部 filters 变化时，同步到表单里
   useEffect(() => {
     setLocalFilters(filters);
   }, [filters]);
+
+  // Click outside to close dropdowns
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (datePickerRef.current && !datePickerRef.current.contains(event.target as Node)) {
+        setShowDatePicker(false);
+      }
+      if (guestPickerRef.current && !guestPickerRef.current.contains(event.target as Node)) {
+        setShowGuestPicker(false);
+      }
+      if (moreFiltersRef.current && !moreFiltersRef.current.contains(event.target as Node)) {
+        setShowMoreFilters(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -46,7 +78,6 @@ export default function PropertySearchBar({ filters, onApply }: Props) {
     "700+",
   ];
 
-  // ⭐ 显式写 prev: PropertyFilters
   const handleCycleType = () => {
     setLocalFilters((prev: PropertyFilters) => {
       const index = typeCycle.indexOf(prev.type);
@@ -61,6 +92,15 @@ export default function PropertySearchBar({ filters, onApply }: Props) {
       const next = pointsCycle[(index + 1) % pointsCycle.length];
       return { ...prev, pointsRange: next };
     });
+  };
+
+  // 格式化日期显示
+  const formatDateDisplay = () => {
+    if (!dateRange.checkIn && !dateRange.checkOut) return "Any dates";
+    if (dateRange.checkIn && dateRange.checkOut) {
+      return `${new Date(dateRange.checkIn).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${new Date(dateRange.checkOut).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+    }
+    return "Select dates";
   };
 
   return (
@@ -91,26 +131,115 @@ export default function PropertySearchBar({ filters, onApply }: Props) {
           {/* 分隔线 */}
           <div className="hidden sm:block h-6 w-px bg-[rgb(var(--color-border))]" />
 
-          {/* Dates：现在只是 UI 占位 */}
-          <button
-            type="button"
-            className="hidden sm:flex items-center gap-2 text-sm text-[rgb(var(--color-muted))]"
-          >
-            <Calendar className="w-4 h-4" />
-            <span>Any dates</span>
-          </button>
+          {/* Dates 选择器 */}
+          <div className="hidden sm:block relative" ref={datePickerRef}>
+            <button
+              type="button"
+              onClick={() => setShowDatePicker(!showDatePicker)}
+              className="flex items-center gap-2 text-sm text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-foreground))] transition"
+            >
+              <Calendar className="w-4 h-4" />
+              <span>{formatDateDisplay()}</span>
+            </button>
+
+            {showDatePicker && (
+              <div className="absolute top-full mt-2 left-0 z-50 w-80 rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] p-4 shadow-lg">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-semibold">Select dates</h3>
+                  <button
+                    type="button"
+                    onClick={() => setShowDatePicker(false)}
+                    className="text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-foreground))]"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+                
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-medium mb-1">Check-in</label>
+                    <input
+                      type="date"
+                      value={dateRange.checkIn}
+                      onChange={(e) => setDateRange(prev => ({ ...prev, checkIn: e.target.value }))}
+                      className="w-full rounded-lg border border-[rgb(var(--color-border))] bg-[rgb(var(--color-input))] px-3 py-2 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium mb-1">Check-out</label>
+                    <input
+                      type="date"
+                      value={dateRange.checkOut}
+                      onChange={(e) => setDateRange(prev => ({ ...prev, checkOut: e.target.value }))}
+                      min={dateRange.checkIn}
+                      className="w-full rounded-lg border border-[rgb(var(--color-border))] bg-[rgb(var(--color-input))] px-3 py-2 text-sm"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDateRange({ checkIn: "", checkOut: "" });
+                      setShowDatePicker(false);
+                    }}
+                    className="w-full text-sm text-[rgb(var(--color-primary))] hover:underline"
+                  >
+                    Clear dates
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* 分隔线 */}
           <div className="hidden sm:block h-6 w-px bg-[rgb(var(--color-border))]" />
 
-          {/* Guests：同样只是 UI 占位 */}
-          <button
-            type="button"
-            className="hidden sm:flex items-center gap-2 text-sm text-[rgb(var(--color-muted))]"
-          >
-            <UsersIcon className="w-4 h-4" />
-            <span>Guests</span>
-          </button>
+          {/* Guests 选择器 */}
+          <div className="hidden sm:block relative" ref={guestPickerRef}>
+            <button
+              type="button"
+              onClick={() => setShowGuestPicker(!showGuestPicker)}
+              className="flex items-center gap-2 text-sm text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-foreground))] transition"
+            >
+              <Users className="w-4 h-4" />
+              <span>{guests} {guests === 1 ? 'Guest' : 'Guests'}</span>
+            </button>
+
+            {showGuestPicker && (
+              <div className="absolute top-full mt-2 right-0 z-50 w-64 rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] p-4 shadow-lg">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-semibold">Guests</h3>
+                  <button
+                    type="button"
+                    onClick={() => setShowGuestPicker(false)}
+                    className="text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-foreground))]"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Number of guests</span>
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setGuests(Math.max(1, guests - 1))}
+                      className="w-8 h-8 rounded-full border border-[rgb(var(--color-border))] flex items-center justify-center hover:border-[rgb(var(--color-primary))] transition"
+                    >
+                      −
+                    </button>
+                    <span className="w-8 text-center font-medium">{guests}</span>
+                    <button
+                      type="button"
+                      onClick={() => setGuests(Math.min(20, guests + 1))}
+                      className="w-8 h-8 rounded-full border border-[rgb(var(--color-border))] flex items-center justify-center hover:border-[rgb(var(--color-primary))] transition"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Search 提交按钮 */}
           <button
@@ -129,7 +258,7 @@ export default function PropertySearchBar({ filters, onApply }: Props) {
             onClick={handleCycleType}
             className="inline-flex items-center gap-2 rounded-full border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] px-4 py-2 text-sm text-[rgb(var(--color-foreground))] hover:border-[rgb(var(--color-primary))] transition"
           >
-            <span className="text-[rgb(var(--color-muted))]">🏠</span>
+            <Home className="w-4 h-4 text-[rgb(var(--color-muted))]" />
             <span>Type: {typeLabelMap[localFilters.type]}</span>
           </button>
 
@@ -139,18 +268,43 @@ export default function PropertySearchBar({ filters, onApply }: Props) {
             onClick={handleCyclePointsRange}
             className="inline-flex items-center gap-2 rounded-full border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] px-4 py-2 text-sm text-[rgb(var(--color-foreground))] hover:border-[rgb(var(--color-primary))] transition"
           >
-            <span className="text-[rgb(var(--color-muted))]">◎</span>
+            <Coins className="w-4 h-4 text-[rgb(var(--color-muted))]" />
             <span>Points: {pointsLabelMap[localFilters.pointsRange]}</span>
           </button>
 
-          {/* More Filters 占位 */}
-          <button
-            type="button"
-            className="inline-flex items-center gap-2 rounded-full border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] px-4 py-2 text-sm text-[rgb(var(--color-foreground))] hover:border-[rgb(var(--color-primary))] transition"
-          >
-            <span className="text-[rgb(var(--color-muted))]">⚙️</span>
-            <span>More Filters</span>
-          </button>
+          {/* More Filters */}
+          <div className="relative" ref={moreFiltersRef}>
+            <button
+              type="button"
+              onClick={() => setShowMoreFilters(!showMoreFilters)}
+              className="inline-flex items-center gap-2 rounded-full border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] px-4 py-2 text-sm text-[rgb(var(--color-foreground))] hover:border-[rgb(var(--color-primary))] transition"
+            >
+              <SlidersHorizontal className="w-4 h-4 text-[rgb(var(--color-muted))]" />
+              <span>More Filters</span>
+            </button>
+
+            {showMoreFilters && (
+              <div className="absolute top-full mt-2 right-0 z-50 w-72 rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] p-4 shadow-lg">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-semibold">Additional filters</h3>
+                  <button
+                    type="button"
+                    onClick={() => setShowMoreFilters(false)}
+                    className="text-[rgb(var(--color-muted))] hover:text-[rgb(var(--color-foreground))]"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+                
+                <div className="space-y-3 text-sm">
+                  <p className="text-[rgb(var(--color-muted))]">
+                    More advanced filters coming soon...
+                  </p>
+                  {/* 未来可以在这里添加更多筛选选项 */}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </form>
     </section>

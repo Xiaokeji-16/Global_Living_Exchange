@@ -5,12 +5,10 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 
-import { Header } from "../../components/Header";
+import AdminHeader from "../components/AdminHeader";
+import InboxList from "../components/InboxList";
 import { useTheme } from "../../hooks/useTheme";
 import { useLogout } from "../../hooks/useLogout";
-
-import AdminUserVerificationList from "../components/AdminUserVerificationList";
-import AdminPropertyVerificationList from "../components/AdminPropertyVerificationList";
 
 function isAdmin(user: ReturnType<typeof useUser>["user"]) {
   return user?.publicMetadata?.role === "admin";
@@ -35,10 +33,9 @@ export default function AdminInboxPage() {
 
   return (
     <div className="min-h-screen bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">
-      <Header
+      <AdminHeader
         theme={theme}
         toggleTheme={toggleTheme}
-        variant="admin"
         onLogoutClick={handleLogout}
       />
 
@@ -51,13 +48,33 @@ export default function AdminInboxPage() {
           </p>
         </section>
 
-        {/* 两个审核列表放到 Inbox 里 */}
+        {/* Inbox 列表 - 使用卡片布局 */}
         <section className="grid gap-6 lg:grid-cols-2">
-          {/* 左边：用户身份认证 */}
-          <AdminUserVerificationList />
+          {/* 用户身份验证 */}
+          <InboxList
+            type="user_verification"
+            status="unread"
+            title="User Verifications"
+            description="Review identity documents and approve members"
+          />
 
-          {/* 右边：房源审核 */}
-          <AdminPropertyVerificationList />
+          {/* 房产审核 */}
+          <InboxList
+            type="property_verification"
+            status="unread"
+            title="Property Verifications"
+            description="Review and approve new property listings"
+          />
+        </section>
+
+        {/* 反馈（可选 - 如果需要的话） */}
+        <section>
+          <InboxList
+            type="feedback"
+            status="unread"
+            title="User Feedback"
+            description="Review and respond to user feedback"
+          />
         </section>
       </main>
     </div>

@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 
-import { Header } from "../components/Header";
+import AdminHeader from "./components/AdminHeader";
 import { useTheme } from "../hooks/useTheme";
 import { useLogout } from "../hooks/useLogout";
+import { useInboxStats } from "../hooks/useInbox";
 
 function isAdmin(user: ReturnType<typeof useUser>["user"]) {
   return user?.publicMetadata?.role === "admin";
@@ -18,11 +19,12 @@ export default function AdminPage() {
   const handleLogout = useLogout();
   const { user, isLoaded } = useUser();
   const router = useRouter();
+  const { stats, loading: statsLoading } = useInboxStats();
 
   useEffect(() => {
     if (!isLoaded) return;
     if (!user || !isAdmin(user)) {
-      router.replace("/"); // 非管理员踢回首页或 dashboard
+      router.replace("/");
     }
   }, [isLoaded, user, router]);
 
@@ -32,10 +34,9 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">
-      <Header
+      <AdminHeader
         theme={theme}
         toggleTheme={toggleTheme}
-        variant="admin"
         onLogoutClick={handleLogout}
       />
 
@@ -48,13 +49,15 @@ export default function AdminPage() {
           </p>
         </section>
 
-        {/* 这里保持你原来的三张统计卡片结构（我用占位示意，如果你已有就直接保留原来的） */}
+        {/* 统计卡片 */}
         <section className="grid gap-6 md:grid-cols-3">
           <div className="rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] p-6">
             <p className="text-xs font-medium tracking-wide text-[rgb(var(--color-muted))]">
               PENDING IDENTITY CHECKS
             </p>
-            <p className="mt-4 text-3xl font-semibold">0</p>
+            <p className="mt-4 text-3xl font-semibold">
+              {statsLoading ? "..." : stats.userVerifications}
+            </p>
             <p className="mt-2 text-sm text-[rgb(var(--color-muted))]">
               New members waiting for manual review.
             </p>
@@ -64,7 +67,9 @@ export default function AdminPage() {
             <p className="text-xs font-medium tracking-wide text-[rgb(var(--color-muted))]">
               LISTINGS AWAITING APPROVAL
             </p>
-            <p className="mt-4 text-3xl font-semibold">0</p>
+            <p className="mt-4 text-3xl font-semibold">
+              {statsLoading ? "..." : stats.propertyVerifications}
+            </p>
             <p className="mt-2 text-sm text-[rgb(var(--color-muted))]">
               Homes submitted but not live yet.
             </p>
@@ -74,7 +79,9 @@ export default function AdminPage() {
             <p className="text-xs font-medium tracking-wide text-[rgb(var(--color-muted))]">
               TODAY&apos;S ACTIONS
             </p>
-            <p className="mt-4 text-3xl font-semibold">0</p>
+            <p className="mt-4 text-3xl font-semibold">
+              {statsLoading ? "..." : stats.todayActions}
+            </p>
             <p className="mt-2 text-sm text-[rgb(var(--color-muted))]">
               Approvals / rejections completed today.
             </p>
@@ -85,19 +92,24 @@ export default function AdminPage() {
         <section className="mt-4">
           <p className="text-sm text-[rgb(var(--color-muted))]">
             All pending identity checks and listing approvals are handled in{" "}
-            <span className="font-medium">Inbox</span>.
+            <a 
+              href="/admin/inbox" 
+              className="font-medium text-[rgb(var(--color-primary))] hover:underline"
+            >
+              Inbox
+            </a>.
           </p>
         </section>
 
-        {/* 👇 新增：模拟数据分析表 */}
+        {/* 统计表格 */}
         <section className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-lg sm:text-xl font-semibold">
-                Activity snapshot (mock data)
+                Activity snapshot
               </h2>
               <p className="mt-1 text-xs md:text-sm text-[rgb(var(--color-muted))]">
-                This table uses sample numbers to illustrate how admin analytics could look.
+                Current inbox statistics and review metrics.
               </p>
             </div>
           </div>
@@ -107,48 +119,52 @@ export default function AdminPage() {
               <thead className="border-b border-[rgb(var(--color-border))] bg-[rgb(var(--color-muted))/5] text-xs uppercase tracking-wide text-[rgb(var(--color-muted))]">
                 <tr>
                   <th className="px-4 py-3">Metric</th>
-                  <th className="px-4 py-3">Today</th>
-                  <th className="px-4 py-3">Last 7 days</th>
-                  <th className="px-4 py-3">Approval rate</th>
-                  <th className="px-4 py-3">Avg. review time</th>
+                  <th className="px-4 py-3">Count</th>
+                  <th className="px-4 py-3">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[rgb(var(--color-border))]">
                 <tr>
-                  <td className="px-4 py-3 font-medium">
-                    Identity verification requests
+                  <td className="px-4 py-3 font-medium">Unread Items</td>
+                  <td className="px-4 py-3">{statsLoading ? "..." : stats.unread}</td>
+                  <td className="px-4 py-3">
+                    <span className="text-yellow-600">Pending</span>
                   </td>
-                  <td className="px-4 py-3">3</td>
-                  <td className="px-4 py-3">21</td>
-                  <td className="px-4 py-3 text-emerald-500">86%</td>
-                  <td className="px-4 py-3">2.4 hours</td>
                 </tr>
                 <tr>
-                  <td className="px-4 py-3 font-medium">
-                    New listings submitted
+                  <td className="px-4 py-3 font-medium">Approved Items</td>
+                  <td className="px-4 py-3">{statsLoading ? "..." : stats.approved}</td>
+                  <td className="px-4 py-3">
+                    <span className="text-emerald-500">Completed</span>
                   </td>
-                  <td className="px-4 py-3">5</td>
-                  <td className="px-4 py-3">32</td>
-                  <td className="px-4 py-3 text-emerald-500">91%</td>
-                  <td className="px-4 py-3">3.1 hours</td>
                 </tr>
                 <tr>
-                  <td className="px-4 py-3 font-medium">
-                    Listings rejected
+                  <td className="px-4 py-3 font-medium">Denied Items</td>
+                  <td className="px-4 py-3">{statsLoading ? "..." : stats.denied}</td>
+                  <td className="px-4 py-3">
+                    <span className="text-rose-500">Rejected</span>
                   </td>
-                  <td className="px-4 py-3 text-rose-500">1</td>
-                  <td className="px-4 py-3 text-rose-500">4</td>
-                  <td className="px-4 py-3 text-rose-500">–</td>
-                  <td className="px-4 py-3">1.7 hours</td>
                 </tr>
                 <tr>
-                  <td className="px-4 py-3 font-medium">
-                    Members verified
+                  <td className="px-4 py-3 font-medium">User Verifications</td>
+                  <td className="px-4 py-3">{statsLoading ? "..." : stats.userVerifications}</td>
+                  <td className="px-4 py-3">
+                    <span className="text-[rgb(var(--color-muted))]">Total</span>
                   </td>
-                  <td className="px-4 py-3">2</td>
-                  <td className="px-4 py-3">18</td>
-                  <td className="px-4 py-3 text-emerald-500">100%</td>
-                  <td className="px-4 py-3">2.0 hours</td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-3 font-medium">Property Verifications</td>
+                  <td className="px-4 py-3">{statsLoading ? "..." : stats.propertyVerifications}</td>
+                  <td className="px-4 py-3">
+                    <span className="text-[rgb(var(--color-muted))]">Total</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-3 font-medium">Feedbacks</td>
+                  <td className="px-4 py-3">{statsLoading ? "..." : stats.feedbacks}</td>
+                  <td className="px-4 py-3">
+                    <span className="text-[rgb(var(--color-muted))]">Total</span>
+                  </td>
                 </tr>
               </tbody>
             </table>
