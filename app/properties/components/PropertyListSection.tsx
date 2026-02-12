@@ -1,6 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useUser } from "@clerk/nextjs";
 import PropertyCard from "./PropertyCard";
 import {
   MOCK_PROPERTIES,
@@ -15,10 +17,50 @@ type Props = {
 
 export default function PropertyListSection({ filters, mode = "public" }: Props) {
   const router = useRouter();
+  const { user } = useUser();
+  const [favouriteIds, setFavouriteIds] = useState<number[]>([]);
+  const [loading, setLoading] = useState(true);
   
   const filtered = MOCK_PROPERTIES.filter((p) =>
     matchesFilters(p, filters)
   );
+
+  // 获取用户的收藏列表
+  useEffect(() => {
+    async function loadFavourites() {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/favourites/list");
+        if (response.ok) {
+          const data = await response.json();
+          setFavouriteIds(data.favourites || []);
+        }
+      } catch (error) {
+        console.error("Error loading favourites:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadFavourites();
+  }, [user]);
+
+  // 处理收藏状态变化
+  const handleFavouriteChange = (propertyId: number, isFavourite: boolean) => {
+    setFavouriteIds((prev) => {
+      if (isFavourite) {
+        // 添加收藏
+        return [...prev, propertyId];
+      } else {
+        // 移除收藏
+        return prev.filter((id) => id !== propertyId);
+      }
+    });
+  };
 
   const handleLoadMore = () => {
     if (mode === "public") {
@@ -41,7 +83,9 @@ export default function PropertyListSection({ filters, mode = "public" }: Props)
             <PropertyCard
               key={p.id}
               property={p}
-              href={`/properties/${p.id}`}   
+              href={`/properties/${p.id}`}
+              isFavourite={favouriteIds.includes(p.id)}
+              onFavouriteChange={handleFavouriteChange}
             />
           ))
         )}
