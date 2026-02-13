@@ -2,6 +2,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import type { HomeItem } from "../lib/dashboardData";
 
 type Props = {
@@ -13,9 +14,12 @@ export default function DashboardHomes({ homes }: Props) {
     <section className="rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))]">
       <div className="flex items-center justify-between px-5 py-4 border-b border-[rgb(var(--color-border))]">
         <h2 className="text-base sm:text-lg font-semibold">Your homes</h2>
-        <button className="text-xs font-medium text-[rgb(var(--color-primary))] hover:underline">
+        <Link 
+          href="/upload-home"
+          className="text-xs font-medium text-[rgb(var(--color-primary))] hover:underline"
+        >
           + Upload new home
-        </button>
+        </Link>
       </div>
 
       <div className="divide-y divide-[rgb(var(--color-border))]">
