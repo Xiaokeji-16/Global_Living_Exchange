@@ -93,7 +93,7 @@ export default function YourHomes() {
             <div
               key={property.id}
               className="flex gap-4 p-4 rounded-xl border border-[rgb(var(--color-border))] hover:shadow-md transition cursor-pointer"
-              onClick={() => router.push(`/homes/${property.id}`)}
+              onClick={() => router.push(`/properties/${property.id}`)}
             >
               {/* 房产图片 */}
               <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-lg overflow-hidden flex-shrink-0">

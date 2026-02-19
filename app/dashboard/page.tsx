@@ -68,7 +68,7 @@ export default function DashboardPage() {
 
         {/* 7. 行程 & 下一步任务 */}
         <section className="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
-          <DashboardUpcomingStays stays={UPCOMING_STAYS} />
+          <DashboardUpcomingStays />
           <DashboardTasks />
         </section>
       </main>
