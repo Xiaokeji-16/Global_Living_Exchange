@@ -1,81 +1,179 @@
 // app/api/admin/inbox/route.ts
+// 修复版本 - 包含完整房产详情
+
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { createServerSupabaseClient } from "@/lib/supabase";
-import type { InboxFilterOptions } from "@/app/types/inbox";
 
-/**
- * GET /api/admin/inbox
- * 获取 Inbox 列表（支持过滤、排序、分页）
- */
+type InboxItem = {
+  id: string;
+  category: "user" | "property" | "feedback";
+  status: "pending" | "approved" | "rejected";
+  createdAt: string;
+  title: string;
+  subtitle?: string;
+  userName?: string;
+  userEmail?: string;
+  propertyName?: string;
+  propertyLocation?: string;
+  feedbackMessage?: string;
+  raw?: any;
+  // ✅ 添加完整的房产详情
+  propertyDetails?: {
+    description?: string;
+    property_type?: string;
+    stay_category?: string;
+    guests?: number;
+    bedrooms?: number;
+    beds?: number;
+    bathrooms?: number;
+    house_rules?: string;
+    photos?: string[];
+    country?: string;
+    city?: string;
+  };
+};
+
 export async function GET(request: NextRequest) {
   try {
-    // 验证管理员权限
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // TODO: 验证用户是否是管理员
-    // const user = await checkUserRole(userId);
-    // if (user.role !== 'admin') {
-    //   return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    // }
-
     const supabase = createServerSupabaseClient();
 
-    // 获取查询参数
-    const searchParams = request.nextUrl.searchParams;
-    const page = parseInt(searchParams.get("page") || "1");
-    const pageSize = parseInt(searchParams.get("pageSize") || "20");
-    const type = searchParams.get("type");
-    const status = searchParams.get("status");
-    const sortField = searchParams.get("sortField") || "created_at";
-    const sortDirection = searchParams.get("sortDirection") || "desc";
-
-    // 构建查询
-    let query = supabase
+    const { data: inboxItems, error: inboxError } = await supabase
       .from("inbox_items")
-      .select("*", { count: "exact" });
+      .select("*")
+      .order("created_at", { ascending: false });
 
-    // 添加过滤条件
-    if (type) {
-      query = query.eq("type", type);
-    }
-    if (status) {
-      query = query.eq("status", status);
-    }
-
-    // 添加排序
-    query = query.order(sortField, { ascending: sortDirection === "asc" });
-
-    // 添加分页
-    const from = (page - 1) * pageSize;
-    const to = from + pageSize - 1;
-    query = query.range(from, to);
-
-    // 执行查询
-    const { data: items, error, count } = await query;
-
-    if (error) {
-      console.error("Supabase error:", error);
+    if (inboxError) {
+      console.error("Fetch inbox error:", inboxError);
       return NextResponse.json(
         { error: "Failed to fetch inbox items" },
         { status: 500 }
       );
     }
 
-    const total = count || 0;
+    const items: InboxItem[] = await Promise.all(
+      (inboxItems || []).map(async (item) => {
+        const baseItem = {
+          id: item.id,
+          createdAt: item.created_at,
+          raw: item,
+        };
 
-    return NextResponse.json({
-      items: items || [],
-      total,
-      page,
-      pageSize,
-      hasMore: page * pageSize < total,
-    });
+        // 映射状态
+        const status = 
+          item.status === "approve" ? "approved" as const :
+          item.status === "deny" ? "rejected" as const :
+          "pending" as const;
+
+        // 根据类型处理
+        if (item.type === "property_verification") {
+          // ✅ 获取完整的房产详情
+          const { data: property } = await supabase
+            .from("properties")
+            .select("*")
+            .eq("id", item.reference_id)
+            .single();
+
+          return {
+            ...baseItem,
+            category: "property" as const,
+            status,
+            title: property?.title || "Untitled Property",
+            subtitle: item.user_email || undefined,
+            propertyName: property?.title || "Untitled",
+            propertyLocation: property?.city && property?.country 
+              ? `${property.city}, ${property.country}`
+              : undefined,
+            userName: item.user_name || undefined,
+            userEmail: item.user_email || undefined,
+            // ✅ 添加完整的房产详情
+            propertyDetails: property ? {
+              description: property.description,
+              property_type: property.property_type,
+              stay_category: property.stay_category,
+              guests: property.guests,
+              bedrooms: property.bedrooms,
+              beds: property.beds,
+              bathrooms: property.bathrooms,
+              house_rules: property.house_rules,
+              photos: property.photos,
+              country: property.country,
+              city: property.city,
+            } : undefined,
+          };
+        } 
+        
+        if (item.type === "user_verification") {
+          // ✅ 获取完整的用户验证详情
+          const { data: verification } = await supabase
+            .from("user_verifications")
+            .select("*")
+            .eq("id", item.reference_id)
+            .single();
+
+          return {
+            ...baseItem,
+            category: "user" as const,
+            status,
+            title: item.user_name || verification?.full_name || "User Verification",
+            subtitle: item.user_email || undefined,
+            userName: item.user_name || verification?.full_name || undefined,
+            userEmail: item.user_email || undefined,
+            // ✅ 添加完整的验证详情 (使用正确的字段名)
+            verificationDetails: verification ? {
+              full_name: verification.full_name,
+              country: verification.country,
+              document_type: verification.document_type,
+              document_number: verification.document_number,
+              note: verification.note,
+            } : undefined,
+          };
+        } 
+        
+        if (item.type === "feedback") {
+          const { data: feedback } = await supabase
+            .from("contact_requests")
+            .select("*")
+            .eq("id", item.reference_id)
+            .single();
+
+          return {
+            ...baseItem,
+            category: "feedback" as const,
+            status,
+            title: feedback?.name || "User Feedback",
+            subtitle: item.user_email || feedback?.email || undefined,
+            userName: feedback?.name || undefined,
+            userEmail: feedback?.email || undefined,
+            feedbackMessage: feedback?.message || undefined,
+            // ✅ 添加完整的 feedback 详情
+            feedbackDetails: feedback ? {
+              name: feedback.name,
+              email: feedback.email,
+              message_type: feedback.message_type,
+              message: feedback.message,
+            } : undefined,
+          };
+        }
+
+        return {
+          ...baseItem,
+          category: "property" as const,
+          status,
+          title: "Unknown Item",
+        };
+      })
+    );
+
+    console.log("✅ Returning", items.length, "inbox items");
+    return NextResponse.json({ items });
   } catch (error) {
-    console.error("Error fetching inbox items:", error);
+    console.error("Error fetching inbox:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -83,10 +181,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-/**
- * POST /api/admin/inbox
- * 创建新的 Inbox 条目（通常由系统自动触发，但也可以手动创建）
- */
 export async function POST(request: NextRequest) {
   try {
     const { userId } = await auth();
@@ -107,7 +201,6 @@ export async function POST(request: NextRequest) {
       user_email,
     } = body;
 
-    // 验证必填字段
     if (!type || !event_type || !reference_id || !reference_table) {
       return NextResponse.json(
         { error: "Missing required fields" },
@@ -115,7 +208,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 创建 Inbox 条目
     const { data: inboxItem, error } = await supabase
       .from("inbox_items")
       .insert({

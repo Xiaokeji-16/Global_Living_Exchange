@@ -1,38 +1,62 @@
 // app/api/admin/inbox/[inboxId]/review/route.ts
+
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { createServerSupabaseClient } from "@/lib/supabase";
 
-/**
- * POST /api/admin/inbox/[inboxId]/review
- * 审核 Inbox 条目（批准或拒绝）
- */
+// ✅ 修改类型定义为 id (匹配实际运行时)
+type RouteContext = {
+  params: Promise<{ id: string }>;
+};
+
 export async function POST(
   request: NextRequest,
-  context: { params: Promise<{ inboxId: string }> }  // params 是 Promise
+  context: RouteContext
 ) {
   try {
-    // 验证管理员权限
+    console.log("=== Review API: POST 开始 ===");
+    
     const { userId } = await auth();
+    console.log("1. User ID:", userId);
+    
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // ✅ 重要：await params
-    const { inboxId } = await context.params;
+    // ✅ 获取 params
+    const params = await context.params;
+    console.log("2a. Params object:", params);
+    
+    const inboxId = params.id;  // ✅ 现在类型匹配了
+    console.log("2b. Inbox ID:", inboxId);
+
+    if (!inboxId || inboxId === "undefined") {
+      console.error("2d. Invalid inbox ID:", inboxId);
+      return NextResponse.json(
+        { error: "Invalid inbox ID" },
+        { status: 400 }
+      );
+    }
     
     const body = await request.json();
+    console.log("3. Request body:", body);
+    
     const { action, note } = body;
 
     if (!["approve", "deny"].includes(action)) {
+      console.error("4. Invalid action:", action);
       return NextResponse.json(
         { error: "Invalid action. Must be 'approve' or 'deny'" },
         { status: 400 }
       );
     }
 
+    console.log("5. Action validated:", action);
+
     const supabase = createServerSupabaseClient();
 
+    // 更新 inbox_items
+    console.log("6. Updating inbox_items with ID:", inboxId);
     const { data: updatedInbox, error } = await supabase
       .from("inbox_items")
       .update({
@@ -46,19 +70,50 @@ export async function POST(
       .single();
 
     if (error) {
-      console.error("Supabase error:", error);
+      console.error("7. Supabase update error:", error);
       return NextResponse.json(
-        { error: "Failed to review item" },
+        { 
+          error: "Failed to review item",
+          details: error.message,
+          code: error.code
+        },
         { status: 500 }
       );
     }
 
     if (!updatedInbox) {
+      console.error("8. Inbox item not found");
       return NextResponse.json(
         { error: "Inbox item not found" },
         { status: 404 }
       );
     }
+
+    console.log("9. Inbox updated successfully");
+
+    // 同时更新 properties 表
+    if (updatedInbox.type === "property_verification") {
+      console.log("10. Updating property with reference_id:", updatedInbox.reference_id);
+      const propertyStatus = action === "approve" ? "approved" : "rejected";
+      
+      const { error: propertyError } = await supabase
+        .from("properties")
+        .update({
+          verification_status: propertyStatus,
+          reviewed_by: userId,
+          reviewed_at: new Date().toISOString(),
+          review_comment: note || null,
+        })
+        .eq("id", parseInt(updatedInbox.reference_id));
+
+      if (propertyError) {
+        console.error("11. Property update error:", propertyError);
+      } else {
+        console.log("11. Property updated successfully");
+      }
+    }
+
+    console.log("=== Review API: 成功完成 ===");
 
     return NextResponse.json({
       success: true,
@@ -66,21 +121,21 @@ export async function POST(
       message: `Successfully ${action}d the item`,
     });
   } catch (error) {
-    console.error("Error reviewing inbox item:", error);
+    console.error("=== Review API: 发生错误 ===");
+    console.error("Error:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { 
+        error: "Internal server error",
+        details: error instanceof Error ? error.message : "Unknown error"
+      },
       { status: 500 }
     );
   }
 }
 
-/**
- * GET /api/admin/inbox/[inboxId]/review
- * 获取单个 Inbox 条目的详细信息（包含关联数据）
- */
 export async function GET(
   request: NextRequest,
-  context: { params: Promise<{ inboxId: string }> }  // params 是 Promise
+  context: RouteContext
 ) {
   try {
     const { userId } = await auth();
@@ -88,8 +143,13 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // ✅ 重要：await params
-    const { inboxId } = await context.params;
+    const params = await context.params;
+    const inboxId = params.id;  // ✅ 也改成 id
+    
+    if (!inboxId) {
+      return NextResponse.json({ error: "Invalid inbox ID" }, { status: 400 });
+    }
+
     const supabase = createServerSupabaseClient();
 
     const { data: inbox, error: inboxError } = await supabase

@@ -15,12 +15,18 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { docUrl, note } = body;
+    const { 
+      full_name, 
+      country, 
+      document_type, 
+      document_number, 
+      note 
+    } = body;
 
     // 验证必填字段
-    if (!docUrl) {
+    if (!full_name || !country || !document_type || !document_number) {
       return NextResponse.json(
-        { error: "Document URL is required" },
+        { error: "Missing required fields" },
         { status: 400 }
       );
     }
@@ -39,10 +45,12 @@ export async function POST(request: NextRequest) {
       const { data: updated, error: updateError } = await supabase
         .from("user_verifications")
         .update({
-          doc_url: docUrl,
+          full_name,
+          country,
+          document_type,
+          document_number,
           note: note || null,
           status: "pending",
-          updated_at: new Date().toISOString(),
         })
         .eq("clerk_user_id", userId)
         .select()
@@ -55,6 +63,16 @@ export async function POST(request: NextRequest) {
           { status: 500 }
         );
       }
+
+      // 更新对应的 inbox_item
+      await supabase
+        .from("inbox_items")
+        .update({
+          status: "unread",
+          user_name: full_name,
+        })
+        .eq("reference_id", updated.id)
+        .eq("type", "user_verification");
 
       return NextResponse.json({
         ok: true,
@@ -69,7 +87,10 @@ export async function POST(request: NextRequest) {
       .insert({
         clerk_user_id: userId,
         status: "pending",
-        doc_url: docUrl,
+        full_name,
+        country,
+        document_type,
+        document_number,
         note: note || null,
       })
       .select()
@@ -83,7 +104,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 注意：inbox_items 会通过 Supabase 触发器自动创建
+    // 创建 inbox_item
+    const { error: inboxError } = await supabase
+      .from("inbox_items")
+      .insert({
+        type: "user_verification",
+        status: "unread",
+        event_type: "verify",
+        reference_id: created.id.toString(),
+        reference_table: "user_verifications",
+        user_id: userId,
+        user_name: full_name,
+        user_email: null,
+      });
+
+    if (inboxError) {
+      console.error("Inbox creation error:", inboxError);
+      // 不返回错误,因为验证记录已经创建了
+    }
 
     return NextResponse.json({
       ok: true,

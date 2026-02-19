@@ -59,7 +59,7 @@ export default function DashboardPage() {
 
         {/* 5. 左：我的房源   右：我的收藏 */}
         <section className="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
-          <DashboardHomes homes={DASHBOARD_HOMES} />
+          <DashboardHomes />
           <DashboardFavourites />
         </section>
 
