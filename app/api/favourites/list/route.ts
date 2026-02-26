@@ -1,65 +1,61 @@
 // app/api/favourites/list/route.ts
-import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
-import { supabaseAdmin } from "@/lib/TS/supabaseClient";
+// 获取用户的收藏列表
 
-export async function GET() {
+import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
+import { createServerSupabaseClient } from "@/lib/supabase";
+
+export async function GET(request: NextRequest) {
   try {
     const { userId } = await auth();
-    
     if (!userId) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    console.log("Fetching favourites for user:", userId);
+    const supabase = createServerSupabaseClient();
 
-    // 获取用户收藏的房源 ID 列表
-    const { data: favourites, error: favouritesError } = await supabaseAdmin
-      .from("user_favourites")
-      .select("property_id")
-      .eq("clerk_user_id", userId);
+    // 获取用户的所有收藏,包含房产详情
+    const { data: favourites, error } = await supabase
+      .from("favourites")
+      .select(`
+        id,
+        created_at,
+        property:properties (
+          id,
+          title,
+          description,
+          city,
+          country,
+          photos,
+          property_type,
+          guests,
+          bedrooms,
+          beds,
+          bathrooms,
+          verification_status
+        )
+      `)
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
 
-    if (favouritesError) {
-      console.error("Error fetching favourites:", favouritesError);
+    if (error) {
+      console.error("Fetch favourites error:", error);
       return NextResponse.json(
         { error: "Failed to fetch favourites" },
         { status: 500 }
       );
     }
 
-    if (!favourites || favourites.length === 0) {
-      console.log("No favourites found");
-      return NextResponse.json({ favourites: [], properties: [] });
-    }
-
-    const propertyIds = favourites.map((f) => f.property_id);
-    console.log("Favourite property IDs:", propertyIds);
-
-    // 获取房源详细信息（只查询 properties 表的基本字段）
-    const { data: properties, error: propertiesError } = await supabaseAdmin
-      .from("properties")
-      .select("id, city, country, title, guests, beds, reference_points, tags, image_url, verified")
-      .in("id", propertyIds);
-
-    if (propertiesError) {
-      console.error("Error fetching properties:", propertiesError);
-      return NextResponse.json(
-        { error: "Failed to fetch properties" },
-        { status: 500 }
-      );
-    }
-
-    console.log("Found properties:", properties?.length || 0);
+    // 过滤掉房产已被删除的收藏
+    const validFavourites = (favourites || []).filter(fav => fav.property !== null);
 
     return NextResponse.json({
-      favourites: propertyIds,
-      properties: properties || [],
+      favourites: validFavourites,
+      count: validFavourites.length,
     });
+
   } catch (error) {
-    console.error("Error in list favourites API:", error);
+    console.error("Error fetching favourites:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

@@ -22,43 +22,32 @@ export default function DashboardFavourites() {
   useEffect(() => {
     async function loadFavourites() {
       if (!user) {
-        console.log("No user found");
         setLoading(false);
         return;
       }
 
-      console.log("Loading favourites for user:", user.id);
-
       try {
         const response = await fetch("/api/favourites/list");
-        
-        console.log("Response status:", response.status);
-        console.log("Response ok:", response.ok);
 
         if (!response.ok) {
-          const errorText = await response.text();
-          console.error("API Error response:", errorText);
           throw new Error("Failed to fetch favourites");
         }
 
         const data = await response.json();
-        console.log("API Response data:", data);
-        console.log("Properties count:", data.properties?.length || 0);
         
-        // 转换数据格式
-        const formattedFavourites: Favourite[] = data.properties.map((prop: any) => {
-          console.log("Processing property:", prop);
+        // ✅ 使用新 API 的数据结构: data.favourites
+        const formattedFavourites: Favourite[] = (data.favourites || []).map((fav: any) => {
+          const prop = fav.property;
           return {
             id: prop.id,
             city: prop.city || "Unknown",
             country: prop.country || "",
             title: prop.title || "Untitled Property",
-            tags: prop.tags || [],
-            referencePoints: prop.reference_points,
+            tags: [], // 如果 properties 表有 tags 字段,改为 prop.tags
+            referencePoints: null, // 如果有积分字段,改为 prop.reference_points
           };
         });
 
-        console.log("Formatted favourites:", formattedFavourites);
         setFavourites(formattedFavourites);
       } catch (error) {
         console.error("Error loading favourites:", error);
@@ -130,10 +119,10 @@ export default function DashboardFavourites() {
               You haven&apos;t saved any homes yet.
             </p>
             <Link
-              href="/properties"
+              href="/homes"
               className="inline-block text-sm text-[rgb(var(--color-primary))] hover:underline"
             >
-              Browse properties →
+              Browse homes →
             </Link>
           </div>
         )}

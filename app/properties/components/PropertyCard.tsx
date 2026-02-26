@@ -1,17 +1,17 @@
+// components/PropertyCard.tsx (或你的实际路径)
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { Heart, MapPin, BedDouble, Users as UsersIcon, ShieldCheck } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 import type { Property } from "../lib/propertyData";
 
 type PropertyCardProps = {
   property: Property;
-  // 如果传了 href，就用 <Link> 包起来，用于跳转到详情页
   href?: string;
-  // 是否已收藏
   isFavourite?: boolean;
-  // 收藏状态改变的回调
   onFavouriteChange?: (propertyId: number, isFavourite: boolean) => void;
 };
 
@@ -33,19 +33,33 @@ export default function PropertyCard({ property, href, isFavourite = false, onFa
   const [isLiked, setIsLiked] = useState(isFavourite);
   const [isLoading, setIsLoading] = useState(false);
 
+  // ✅ 组件加载时检查收藏状态
+  useEffect(() => {
+    async function checkFavouriteStatus() {
+      if (!user || !id) return;
+
+      try {
+        const response = await fetch(`/api/favourites/check?property_id=${id}`);
+        if (response.ok) {
+          const data = await response.json();
+          setIsLiked(data.isFavourited);
+        }
+      } catch (error) {
+        console.error("Error checking favourite status:", error);
+      }
+    }
+
+    checkFavouriteStatus();
+  }, [user, id]);
+
   const handleLikeClick = async (e: React.MouseEvent) => {
-    e.preventDefault(); // 阻止链接跳转
+    e.preventDefault();
     e.stopPropagation();
 
     if (!user) {
-      // 未登录，提示用户登录
       alert("Please sign in to save favourites");
       return;
     }
-
-    // 调试：检查 property id
-    console.log("Property ID:", id);
-    console.log("Full property:", property);
 
     if (!id) {
       console.error("Property ID is missing!");
@@ -56,20 +70,14 @@ export default function PropertyCard({ property, href, isFavourite = false, onFa
     setIsLoading(true);
 
     try {
-      const endpoint = isLiked ? "/api/favourites/remove" : "/api/favourites/add";
-      
-      console.log("Calling endpoint:", endpoint);
-      console.log("With property ID:", id);
-
-      const response = await fetch(endpoint, {
+      // ✅ 使用新的 toggle API
+      const response = await fetch("/api/favourites/toggle", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ propertyId: id }),
+        body: JSON.stringify({ property_id: id }),
       });
-
-      console.log("Response status:", response.status);
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -77,7 +85,9 @@ export default function PropertyCard({ property, href, isFavourite = false, onFa
         throw new Error(errorData.error || "Failed to update favourite");
       }
 
-      const newLikedState = !isLiked;
+      const data = await response.json();
+      const newLikedState = data.isFavourited;
+      
       setIsLiked(newLikedState);
       
       // 通知父组件状态变化
@@ -92,7 +102,6 @@ export default function PropertyCard({ property, href, isFavourite = false, onFa
     }
   };
 
-  // 纯粹的卡片内容（不带 Link）
   const content = (
     <article className="group overflow-hidden rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] shadow-sm hover:shadow-md hover:border-[rgb(var(--color-primary))]/60 transition">
       {/* 图片区域 */}
@@ -104,7 +113,7 @@ export default function PropertyCard({ property, href, isFavourite = false, onFa
           className="object-cover transition-transform duration-300 group-hover:scale-105"
         />
 
-        {/* 收藏爱心 - 可交互 */}
+        {/* 收藏爱心 */}
         <button
           type="button"
           onClick={handleLikeClick}
@@ -119,7 +128,7 @@ export default function PropertyCard({ property, href, isFavourite = false, onFa
           />
         </button>
 
-        {/* VERIFIED 徽标 - 绿色透明风格 + 图标 */}
+        {/* VERIFIED 徽标 */}
         {verified && (
           <span className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-100/90 dark:bg-emerald-900/80 backdrop-blur-sm px-3 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-300 shadow-sm border border-emerald-200 dark:border-emerald-700">
             <ShieldCheck className="w-3.5 h-3.5" />
@@ -187,10 +196,8 @@ export default function PropertyCard({ property, href, isFavourite = false, onFa
     </article>
   );
 
-  // 没有 href 的情况：直接渲染卡片（比如将来在 dashboard 上复用）
   if (!href) return content;
 
-  // 有 href：外面包一层 Link，用于跳转到详情页
   return (
     <Link href={href} className="block">
       {content}
