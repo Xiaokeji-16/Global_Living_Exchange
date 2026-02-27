@@ -40,18 +40,20 @@ export default function YourHomes() {
 
   const getStatusBadge = (status: string) => {
     const badges = {
-      pending: { text: "Pending", color: "bg-yellow-100 text-yellow-700" },
+      draft: { text: "Draft", color: "bg-gray-100 text-gray-700" },
+      pending: { text: "Pending review", color: "bg-yellow-100 text-yellow-700" },
       approved: { text: "Active", color: "bg-emerald-100 text-emerald-700" },
-      rejected: { text: "Draft", color: "bg-gray-100 text-gray-700" },
+      rejected: { text: "Rejected", color: "bg-red-100 text-red-700" },
     };
-    const badge = badges[status as keyof typeof badges] || badges.pending;
-    
+    const badge = badges[status as keyof typeof badges] || badges.draft;
     return (
       <span className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${badge.color}`}>
         {badge.text}
       </span>
     );
   };
+
+  const displayed = properties.slice(0, 3);
 
   if (loading) {
     return (
@@ -88,49 +90,57 @@ export default function YourHomes() {
           </button>
         </div>
       ) : (
-        <div className="space-y-4">
-          {properties.map((property) => (
-            <div
-              key={property.id}
-              className="flex gap-4 p-4 rounded-xl border border-[rgb(var(--color-border))] hover:shadow-md transition cursor-pointer"
-              onClick={() => router.push(`/properties/${property.id}`)}
-            >
-              {/* 房产图片 */}
-              <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-lg overflow-hidden flex-shrink-0">
-                {property.photos && property.photos.length > 0 ? (
-                  <Image
-                    src={property.photos[0]}
-                    alt={property.title}
-                    fill
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                    <span className="text-gray-400 text-xs">No photo</span>
+        <>
+          <div className="space-y-4">
+            {displayed.map((property) => (
+              <div
+                key={property.id}
+                className="flex gap-4 p-4 rounded-xl border border-[rgb(var(--color-border))] hover:shadow-md transition cursor-pointer"
+                onClick={() => router.push(`/properties/${property.id}`)}
+              >
+                <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-lg overflow-hidden flex-shrink-0">
+                  {property.photos && property.photos.length > 0 ? (
+                    <Image
+                      src={property.photos[0]}
+                      alt={property.title}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                      <span className="text-gray-400 text-xs">No photo</span>
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg font-semibold truncate">{property.title}</h3>
+                      <p className="text-sm text-[rgb(var(--color-muted))] mt-1">
+                        {property.city}, {property.country}
+                      </p>
+                      <p className="text-sm text-[rgb(var(--color-muted))] mt-1">
+                        {property.property_type} • {property.guests} Guests
+                      </p>
+                    </div>
+                    {getStatusBadge(property.verification_status)}
                   </div>
-                )}
-              </div>
-
-              {/* 房产信息 */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-semibold truncate">
-                      {property.title}
-                    </h3>
-                    <p className="text-sm text-[rgb(var(--color-muted))] mt-1">
-                      {property.city}, {property.country}
-                    </p>
-                    <p className="text-sm text-[rgb(var(--color-muted))] mt-1">
-                      {property.property_type} • {property.guests} Guests
-                    </p>
-                  </div>
-                  {getStatusBadge(property.verification_status)}
                 </div>
               </div>
+            ))}
+          </div>
+
+          {properties.length > 3 && (
+            <div className="flex justify-center mt-4">
+              <button
+                onClick={() => router.push("/dashboard/my-homes")}
+                className="rounded-full border border-[rgb(var(--color-border))] px-6 py-2 text-sm text-[rgb(var(--color-muted))] hover:border-[rgb(var(--color-primary))] hover:text-[rgb(var(--color-primary))] transition"
+              >
+                Show all {properties.length} homes →
+              </button>
             </div>
-          ))}
-        </div>
+          )}
+        </>
       )}
     </div>
   );

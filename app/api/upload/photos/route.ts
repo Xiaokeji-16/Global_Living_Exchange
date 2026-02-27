@@ -1,7 +1,7 @@
 // app/api/upload/photos/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { createServerSupabaseClient } from "@/lib/supabase";
+import { put } from "@vercel/blob";
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,48 +20,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = createServerSupabaseClient();
     const uploadedUrls: string[] = [];
 
     for (const file of files) {
-      // 生成唯一文件名
       const timestamp = Date.now();
       const randomString = Math.random().toString(36).substring(2, 8);
-      const fileExtension = file.name.split('.').pop();
-      const fileName = `${timestamp}-${randomString}.${fileExtension}`;
-      const filePath = `properties/${userId}/${fileName}`;
+      const fileExtension = file.name.split(".").pop();
+      const fileName = `properties/${userId}/${timestamp}-${randomString}.${fileExtension}`;
 
-      // 读取文件内容
-      const arrayBuffer = await file.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
+      const blob = await put(fileName, file, {
+        access: "public",
+      });
 
-      // 使用 Service Role 上传
-      const { data, error } = await supabase.storage
-        .from('property-photos')
-        .upload(filePath, buffer, {
-          contentType: file.type,
-          cacheControl: '3600',
-          upsert: false
-        });
-
-      if (error) {
-        console.error('Upload error:', error);
-        throw new Error(`Failed to upload ${file.name}: ${error.message}`);
-      }
-
-      // 获取公开URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('property-photos')
-        .getPublicUrl(filePath);
-
-      uploadedUrls.push(publicUrl);
+      uploadedUrls.push(blob.url);
     }
 
     return NextResponse.json({ urls: uploadedUrls });
   } catch (error) {
-    console.error('Upload error:', error);
+    console.error("Upload error:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Upload failed' },
+      { error: error instanceof Error ? error.message : "Upload failed" },
       { status: 500 }
     );
   }

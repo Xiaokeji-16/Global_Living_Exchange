@@ -10,7 +10,6 @@ import { useLogout } from "../../hooks/useLogout";
 // 复用 property 页里的「内容组件」
 import PropertySearchBar from "../../properties/components/PropertySearchBar";
 import PropertyListSection from "../../properties/components/PropertyListSection";
-import PointsMapSection from "../../properties/components/PointsMapSection";
 import type { PropertyFilters } from "../../properties/lib/propertyData";
 
 export default function DashboardPropertiesPage() {
@@ -40,9 +39,9 @@ export default function DashboardPropertiesPage() {
         <PropertySearchBar filters={filters} onApply={setFilters} />
 
         {/* 左列表 + 右侧积分图 */}
-        <section className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+        <section className="mt-8">
           <PropertyListSection filters={filters} mode="authed" />
-          <PointsMapSection />
+          
         </section>
       </main>
     </div>

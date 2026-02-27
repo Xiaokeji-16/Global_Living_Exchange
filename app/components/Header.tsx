@@ -8,6 +8,10 @@ import { UserButton } from "@clerk/nextjs";
 import CustomFieldsPage from "@/app/components/CustomFieldsPage";
 import { Menu, X, Moon, Sun, Sparkles } from "lucide-react";
 import AdminHeader from "@/app/admin/components/AdminHeader";
+import { Nunito } from "next/font/google";
+
+
+const nunito = Nunito({ subsets: ["latin"], weight: ["800"] });
 
 interface HeaderProps {
   theme: "light" | "dark";
@@ -115,7 +119,7 @@ export function Header({
               width={45}
               height={45}
             />
-            <span className="flex items-center gap-2 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--color-primary))]">
+            <span className={`${nunito.className} text-xl font-extrabold tracking-tight text-gray-700 dark:text-gray-200`}>
               Global Living Exchange
             </span>
           </Link>
@@ -164,13 +168,6 @@ export function Header({
                 {/* Clerk 用户头像 + 自定义字段 tab */}
                 <RenderUserButton />
 
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  className="text-base md:text-lg text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-primary))] transition-colors"
-                >
-                  Logout
-                </button>
               </div>
             )}
           </div>
@@ -248,17 +245,6 @@ export function Header({
                       </UserButton.UserProfilePage>
                     </UserButton>
                       
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        handleLogout();
-                        setMobileMenuOpen(false);
-                      }}
-                      className="text-[rgb(var(--color-foreground))] hover:text-[rgb(var(--color-primary))] transition-colors text-left"
-                    >
-                      Logout
-                    </button>
                   </div>
                 )}
               </div>
