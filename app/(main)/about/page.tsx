@@ -1,13 +1,13 @@
 // app/about/page.tsx
 "use client";
 
-import { Header } from "../components/Header";
+import { Header } from "../../components/Header";
 import { AboutHero } from "./components/AboutHero";
 import { AboutHowItWorks } from "./components/AboutHowItWorks";
 import { AboutCommunity } from "./components/AboutCommunity";
 import { AboutWhy } from "./components/AboutWhy";
 import { AboutCTA } from "./components/AboutCTA";
-import { useTheme } from "../hooks/useTheme";
+import { useTheme } from "../../hooks/useTheme";
 import { AboutTrustSection } from "./components/AboutTrustSections";
 
 export default function AboutPage() {

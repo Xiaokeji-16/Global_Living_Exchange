@@ -1,8 +1,8 @@
 // app/contact/page.tsx
 "use client";
 
-import { Header } from "../components/Header";
-import { useTheme } from "../hooks/useTheme";
+import { Header } from "../../components/Header";
+import { useTheme } from "../../hooks/useTheme";
 import { ContactIntro } from "./components/ContactIntro";
 import { ContactHelpList } from "./components/ContactHelpList";
 import { ContactMetaCards } from "./components/ContactMetaCards";

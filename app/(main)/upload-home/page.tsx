@@ -1,9 +1,9 @@
 // app/upload-home/page.tsx
 "use client";
 
-import { Header } from "../components/Header";
-import { useTheme } from "../hooks/useTheme";
-import { useLogout } from "../hooks/useLogout";
+import { Header } from "../../components/Header";
+import { useTheme } from "../../hooks/useTheme";
+import { useLogout } from "../../hooks/useLogout";
 import { UploadHomeForm } from "./components/UploadHomeForm";
 
 export default function UploadHomePage() {

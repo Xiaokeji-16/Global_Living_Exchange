@@ -1,7 +1,7 @@
 // app/hooks/useInbox.ts
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react"; 
 import type {
   InboxItem,
   InboxListResponse,
@@ -11,7 +11,7 @@ import type {
 interface UseInboxOptions {
   type?: string;
   status?: string;
-  autoRefresh?: boolean;
+  autoRefresh?: boolean; 
   refreshInterval?: number; // 毫秒
 }
 
