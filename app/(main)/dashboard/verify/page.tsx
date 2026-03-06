@@ -1,9 +1,9 @@
 // app/dashboard/verify/page.tsx
 "use client";
 
-import { Header } from "../../components/Header";
-import { useTheme } from "../../hooks/useTheme";
-import { useLogout } from "../../hooks/useLogout";
+import { Header } from "../../../components/Header";
+import { useTheme } from "../../../hooks/useTheme";
+import { useLogout } from "../../../hooks/useLogout";
 import { useUser } from "@clerk/nextjs";
 import UserVerificationForm from "../components/UserVerificationForm";
 import { useEffect, useState } from "react";

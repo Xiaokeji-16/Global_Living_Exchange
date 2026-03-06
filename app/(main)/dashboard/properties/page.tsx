@@ -2,9 +2,9 @@
 "use client";
 
 import { useState } from "react";
-import { Header } from "../../components/Header";
-import { useTheme } from "../../hooks/useTheme";
-import { useLogout } from "../../hooks/useLogout";
+import { Header } from "../../../components/Header";
+import { useTheme } from "../../../hooks/useTheme";
+import { useLogout } from "../../../hooks/useLogout";
 
 
 // 复用 property 页里的「内容组件」

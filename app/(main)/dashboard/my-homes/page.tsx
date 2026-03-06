@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Trash2 } from "lucide-react";
-import { Header } from "../../components/Header";
-import { useTheme } from "../../hooks/useTheme";
-import { useLogout } from "../../hooks/useLogout";
+import { Header } from "../../../components/Header";
+import { useTheme } from "../../../hooks/useTheme";
+import { useLogout } from "../../../hooks/useLogout";
 
 type Property = {
   id: number;

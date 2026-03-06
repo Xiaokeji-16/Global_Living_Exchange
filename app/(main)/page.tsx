@@ -1,12 +1,13 @@
 "use client";
 
-import { useTheme } from "./hooks/useTheme";
-import { Header } from './components/Header';
-import { Hero } from "./components/Hero";
-import { HowItWorksSection } from "./components/HowtoworkSection";
-import { FeaturedHomesSection } from "./components/FeatureHomesSection";
-import { TrustSection } from "./components/TrustSection";
+import { useTheme } from "../hooks/useTheme";
+import { Header } from '../components/Header';
+import { Hero } from "../components/Hero";
+import { HowItWorksAndCTA } from "../components/HowItWorksAndCTA";
+import { FeaturedHomesSection } from "../components/FeatureHomesSection";
+import { TrustSection } from "../components/TrustSection";
 import { useUser } from "@clerk/nextjs";
+
 
 export default function App() {
   const { theme, toggleTheme } = useTheme();
@@ -23,11 +24,12 @@ export default function App() {
       <main>
         <div className="space-y-16 md:space-y-24 lg:space-y-32">
           <Hero />
-          <HowItWorksSection />
           <FeaturedHomesSection />
           <TrustSection />
+          <HowItWorksAndCTA />
+          
         </div>
       </main>
     </div>
   );
-}
+} 

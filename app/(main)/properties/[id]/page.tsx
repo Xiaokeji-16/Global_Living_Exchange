@@ -3,8 +3,8 @@
 
 import { useRouter, useParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Header } from "../../components/Header";
-import { useTheme } from "../../hooks/useTheme";
+import { Header } from "../../../components/Header";
+import { useTheme } from "../../../hooks/useTheme";
 import { type Property } from "../lib/propertyData";
 import { PropertyDetailHero } from "../components/PropertyDetailHero";
 import { PropertyDetailMainInfo } from "../components/PropertyDetailMainInfo";

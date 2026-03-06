@@ -1,10 +1,10 @@
 // app/dashboard/contact/page.tsx
 "use client";
 
-import { Header } from "../../components/Header";
-import { useTheme } from "../../hooks/useTheme";
+import { Header } from "../../../components/Header";
+import { useTheme } from "../../../hooks/useTheme";
 import FeedbackForm from "../../contact/components/FeedbackForm";
-import { useLogout } from "../../hooks/useLogout";
+import { useLogout } from "../../../hooks/useLogout";
 
 export default function DashboardContactPage() {
   const { theme, toggleTheme } = useTheme();

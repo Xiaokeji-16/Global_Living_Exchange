@@ -2,8 +2,8 @@
 "use client";
 
 import { useState } from "react";
-import { Header } from "../components/Header";
-import { useTheme } from "../hooks/useTheme"
+import { Header } from "../../components/Header";
+import { useTheme } from "../../hooks/useTheme"
 
 
 import PropertySearchBar from "./components/PropertySearchBar";

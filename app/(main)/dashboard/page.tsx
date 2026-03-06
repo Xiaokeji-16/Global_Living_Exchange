@@ -2,9 +2,9 @@
 "use client";
 
 import { useEffect } from "react";
-import { Header } from "../components/Header";
-import { useTheme } from "../hooks/useTheme";
-import { useLogout } from "../hooks/useLogout";
+import { Header } from "../../components/Header";
+import { useTheme } from "../../hooks/useTheme";
+import { useLogout } from "../../hooks/useLogout";
 
 import DashboardWelcome from "./components/DashboardWelcome";
 import DashboardUpcomingStays from "./components/DashboardUpcomingStays";

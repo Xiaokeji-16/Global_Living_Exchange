@@ -6,11 +6,11 @@ import Link from "next/link";
 import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 
 const HERO_IMAGES = [
-  "/icon/cozy_home.jpg",
-  "/icon/cozy_home.jpg", // 换成你真实的5张图片路径
-  "/icon/cozy_home.jpg",
-  "/icon/cozy_home.jpg",
-  "/icon/cozy_home.jpg",
+  "/icon/home1.png",
+  "/icon/home2.png",
+  "/icon/home3.png",
+  "/icon/home4.png",
+  "/icon/home5.png",
 ];
 
 export function Hero() {
