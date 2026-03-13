@@ -9,9 +9,13 @@ import HouseAnimation from "@/public/House_lottie_Animation.json";
 
 interface AuthBrandPanelProps {
   variant?: "sign-in" | "sign-up";
+  showHouseAnimation?: boolean;
 }
 
-export function AuthBrandPanel({ variant = "sign-in" }: AuthBrandPanelProps) {
+export function AuthBrandPanel({
+  variant = "sign-in",
+  showHouseAnimation = true,
+}: AuthBrandPanelProps) {
   const isSignUp = variant === "sign-up";
 
   return (
@@ -125,7 +129,7 @@ export function AuthBrandPanel({ variant = "sign-in" }: AuthBrandPanelProps) {
         </div>
 
         {/* 底部：统计数据 + House 动画 */}
-        <div className="flex items-center justify-between -mt-4">
+        <div className={showHouseAnimation ? "flex items-center justify-between -mt-4" : "-mt-4"}>
           {/* 统计数据 */}
           <div className="flex gap-10 xl:gap-12">
             <div>
@@ -142,14 +146,15 @@ export function AuthBrandPanel({ variant = "sign-in" }: AuthBrandPanelProps) {
             </div>
           </div>
 
-          {/* House Lottie 动画 - 500px */}
-          <div className="w-[400px] xl:w-[500px] -mb-12 -mr-8">
-            <Lottie
-              animationData={HouseAnimation}
-              loop={true}
-              style={{ width: "100%", height: "auto" }}
-            />
-          </div>
+          {showHouseAnimation && (
+            <div className="w-[400px] xl:w-[500px] -mb-12 -mr-8">
+              <Lottie
+                animationData={HouseAnimation}
+                loop={true}
+                style={{ width: "100%", height: "auto" }}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

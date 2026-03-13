@@ -38,7 +38,10 @@ export function FeaturedHomesSection() {
   }, []);
 
   return (
-    <section id="properties" className="px-4 sm:px-6 lg:px-8">
+    <section
+      id="properties"
+      className="px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24"
+    >
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-10 sm:mb-12">
           <h2 className="text-2xl sm:text-3xl font-semibold text-[rgb(var(--color-foreground))]">
@@ -56,7 +59,7 @@ export function FeaturedHomesSection() {
             {homes.map((home) => (
               <article
                 key={home.id}
-                onClick={() => router.push("/login")}
+                onClick={() => router.push("/sign-in")}
                 className="group overflow-hidden rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] shadow-sm flex flex-col transition-transform duration-200 hover:-translate-y-1 hover:shadow-xl cursor-pointer"
               >
                 <div className="relative aspect-[4/3] w-full overflow-hidden">
@@ -99,7 +102,7 @@ export function FeaturedHomesSection() {
         <div className="mt-10 flex justify-center">
           <button
             type="button"
-            onClick={() => router.push("/login")}
+            onClick={() => router.push("/sign-in")}
             className="px-8 py-3 rounded-full border border-[rgb(var(--color-primary))] bg-transparent text-sm font-medium text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-primary))] hover:text-[rgb(var(--color-primary-foreground))] transition"
           >
             View all properties

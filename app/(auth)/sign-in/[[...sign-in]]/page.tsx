@@ -175,7 +175,7 @@ export default function SignInPage() {
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-[#f5f5f5]">
       {/* 左侧品牌区 */}
-      <AuthBrandPanel variant="sign-in" />
+      <AuthBrandPanel variant="sign-in" showHouseAnimation={false} />
 
       {/* 右侧登录区 */}
       <div className="flex-1 flex items-center justify-center px-6 py-10 lg:px-12 bg-[#f7f7f8]">
@@ -205,9 +205,9 @@ export default function SignInPage() {
           {/* 标题区域 */}
           <div className="mb-8">
             {step === "sign-in" ? (
-              <>
+              <div className="flex flex-col items-center text-center">
                 {/* Welcome Lottie 动画 */}
-                <div className="w-[280px] md:w-[340px] -ml-2 mb-2">
+                <div className="w-[280px] md:w-[340px] mb-2">
                   <Lottie
                     animationData={WelcomeAnimation}
                     loop={true}
@@ -217,7 +217,7 @@ export default function SignInPage() {
                 <p className="text-[18px] text-[#667085]">
                   Enter your credentials to access your account
                 </p>
-              </>
+              </div>
             ) : (
               <>
                 <h2 className="text-[34px] md:text-[44px] font-bold tracking-[-0.03em] text-[#0f172a] leading-tight">

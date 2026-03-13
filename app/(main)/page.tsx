@@ -22,12 +22,11 @@ export default function App() {
       />
       
       <main>
-        <div className="space-y-16 md:space-y-24 lg:space-y-32">
+        <div>
           <Hero />
           <FeaturedHomesSection />
           <TrustSection />
           <HowItWorksAndCTA />
-          
         </div>
       </main>
     </div>

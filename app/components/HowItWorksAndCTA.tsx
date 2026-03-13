@@ -42,7 +42,7 @@ const steps = [
 
 export function HowItWorksAndCTA() {
   return (
-    <section className="px-4 sm:px-6 lg:px-8 py-10">
+    <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
       {/* 圆角背景容器 */}
       <div 
         className="max-w-7xl mx-auto rounded-[40px] px-6 sm:px-10 lg:px-12 py-10 sm:py-14"
