@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSignIn } from "@clerk/nextjs";
 import { AuthBrandPanel } from "@/app/components/AuthBrandPanel";
@@ -173,16 +174,16 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row bg-[#f5f5f5]">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-[rgb(var(--color-background))]">
       {/* 左侧品牌区 */}
       <AuthBrandPanel variant="sign-in" showHouseAnimation={false} />
 
       {/* 右侧登录区 */}
-      <div className="flex-1 flex items-center justify-center px-6 py-10 lg:px-12 bg-[#f7f7f8]">
+      <div className="flex-1 flex items-center justify-center px-6 py-10 lg:px-12 bg-[rgb(var(--color-secondary))]">
         <div className="w-full max-w-[520px]">
           {/* 移动端 Logo */}
           <div className="lg:hidden flex items-center gap-3 mb-10 justify-center">
-            <div className="w-10 h-10 rounded-xl bg-[#2563eb] flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-[rgb(var(--color-primary))] flex items-center justify-center">
               <svg
                 className="w-6 h-6 text-white"
                 fill="none"
@@ -197,7 +198,7 @@ export default function SignInPage() {
                 />
               </svg>
             </div>
-            <span className="text-xl font-semibold text-[#0f172a]">
+            <span className="text-xl font-semibold text-[rgb(var(--color-foreground))]">
               Global Living Exchange
             </span>
           </div>
@@ -214,16 +215,16 @@ export default function SignInPage() {
                     style={{ width: "100%", height: "auto" }}
                   />
                 </div>
-                <p className="text-[18px] text-[#667085]">
+                <p className="text-[18px] text-[rgb(var(--color-muted))]">
                   Enter your credentials to access your account
                 </p>
               </div>
             ) : (
               <>
-                <h2 className="text-[34px] md:text-[44px] font-bold tracking-[-0.03em] text-[#0f172a] leading-tight">
+                <h2 className="text-[34px] md:text-[44px] font-bold tracking-[-0.03em] text-[rgb(var(--color-foreground))] leading-tight">
                   Verify your account
                 </h2>
-                <p className="mt-3 text-[18px] text-[#667085]">
+                <p className="mt-3 text-[18px] text-[rgb(var(--color-muted))]">
                   Enter the verification code we sent to your email
                 </p>
               </>
@@ -231,16 +232,16 @@ export default function SignInPage() {
           </div>
 
           {/* 登录卡片 */}
-          <div className="rounded-[24px] bg-white border border-[#e4e7ec] shadow-[0_10px_30px_rgba(16,24,40,0.08)] overflow-hidden">
+          <div className="overflow-hidden rounded-[24px] border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] shadow-[0_10px_30px_rgba(23,33,43,0.08)]">
             {step === "sign-in" ? (
               <>
                 {/* OAuth 按钮 */}
-                <div className="grid grid-cols-2 gap-0 border-b border-[#eaecf0]">
+                <div className="grid grid-cols-2 gap-0 border-b border-[rgb(var(--color-border))]">
                   <button
                     type="button"
                     onClick={() => handleOAuthSignIn("oauth_apple")}
                     disabled={!isLoaded || isSubmitting || isOAuthLoading !== null}
-                    className="h-[64px] flex items-center justify-center gap-3 text-[16px] font-semibold text-[#344054] hover:bg-[#fafafa] disabled:opacity-60 border-r border-[#eaecf0]"
+                    className="h-[64px] flex items-center justify-center gap-3 border-r border-[rgb(var(--color-border))] text-[16px] font-semibold text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-secondary))] disabled:opacity-60"
                   >
                     <span className="text-[22px] leading-none"></span>
                     <span>{isOAuthLoading === "apple" ? "Loading..." : "Apple"}</span>
@@ -250,7 +251,7 @@ export default function SignInPage() {
                     type="button"
                     onClick={() => handleOAuthSignIn("oauth_google")}
                     disabled={!isLoaded || isSubmitting || isOAuthLoading !== null}
-                    className="h-[64px] flex items-center justify-center gap-3 text-[16px] font-semibold text-[#344054] hover:bg-[#fafafa] disabled:opacity-60"
+                    className="h-[64px] flex items-center justify-center gap-3 text-[16px] font-semibold text-[rgb(var(--color-foreground))] hover:bg-[rgb(var(--color-secondary))] disabled:opacity-60"
                   >
                     <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">
                       <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303C33.655 32.657 29.243 36 24 36c-6.627 0-12-5.373-12-12S17.373 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.271 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917Z"/>
@@ -265,16 +266,16 @@ export default function SignInPage() {
                 {/* 邮箱密码表单 */}
                 <div className="px-8 py-6">
                   <div className="flex items-center gap-4 mb-5">
-                    <div className="h-px flex-1 bg-[#eaecf0]" />
-                    <span className="text-sm text-[#98a2b3]">or</span>
-                    <div className="h-px flex-1 bg-[#eaecf0]" />
+                    <div className="h-px flex-1 bg-[rgb(var(--color-border))]" />
+                    <span className="text-sm text-[rgb(var(--color-muted))]">or</span>
+                    <div className="h-px flex-1 bg-[rgb(var(--color-border))]" />
                   </div>
 
                   <form onSubmit={handleEmailPasswordSignIn} className="space-y-5">
                     <div>
                       <label
                         htmlFor="email"
-                        className="block text-[15px] font-semibold text-[#344054] mb-2"
+                        className="mb-2 block text-[15px] font-semibold text-[rgb(var(--color-foreground))]"
                       >
                         Email address
                       </label>
@@ -285,7 +286,7 @@ export default function SignInPage() {
                         value={emailAddress}
                         onChange={(e) => setEmailAddress(e.target.value)}
                         placeholder="Enter your email address"
-                        className="w-full h-[56px] rounded-2xl border border-[#d0d5dd] px-4 text-[16px] text-[#101828] placeholder:text-[#98a2b3] outline-none focus:border-[#2563eb] focus:ring-4 focus:ring-blue-100"
+                        className="h-[56px] w-full rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] px-4 text-[16px] text-[rgb(var(--color-foreground))] placeholder:text-[rgb(var(--color-muted))] outline-none transition focus:border-[rgb(var(--color-primary))] focus:ring-4 focus:ring-[rgba(47,107,98,0.12)]"
                         disabled={!isLoaded || isSubmitting || isOAuthLoading !== null}
                         required
                       />
@@ -294,7 +295,7 @@ export default function SignInPage() {
                     <div>
                       <label
                         htmlFor="password"
-                        className="block text-[15px] font-semibold text-[#344054] mb-2"
+                        className="mb-2 block text-[15px] font-semibold text-[rgb(var(--color-foreground))]"
                       >
                         Password
                       </label>
@@ -305,7 +306,7 @@ export default function SignInPage() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="Enter your password"
-                        className="w-full h-[56px] rounded-2xl border border-[#d0d5dd] px-4 text-[16px] text-[#101828] placeholder:text-[#98a2b3] outline-none focus:border-[#2563eb] focus:ring-4 focus:ring-blue-100"
+                        className="h-[56px] w-full rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] px-4 text-[16px] text-[rgb(var(--color-foreground))] placeholder:text-[rgb(var(--color-muted))] outline-none transition focus:border-[rgb(var(--color-primary))] focus:ring-4 focus:ring-[rgba(47,107,98,0.12)]"
                         disabled={!isLoaded || isSubmitting || isOAuthLoading !== null}
                         required
                       />
@@ -320,7 +321,7 @@ export default function SignInPage() {
                     <button
                       type="submit"
                       disabled={!isLoaded || isSubmitting || isOAuthLoading !== null}
-                      className="w-full h-[60px] rounded-2xl bg-[#2563eb] text-white text-[18px] font-semibold shadow-[inset_0_-2px_0_rgba(0,0,0,0.15)] hover:bg-[#1d4ed8] transition disabled:opacity-60"
+                      className="h-[60px] w-full rounded-2xl bg-[rgb(var(--color-primary))] text-[18px] font-semibold text-[rgb(var(--color-primary-foreground))] shadow-[inset_0_-2px_0_rgba(0,0,0,0.12)] transition hover:opacity-90 disabled:opacity-60"
                     >
                       {isSubmitting ? "Signing in..." : "Sign in"}
                     </button>
@@ -333,7 +334,7 @@ export default function SignInPage() {
                   <div>
                     <label
                       htmlFor="code"
-                      className="block text-[15px] font-semibold text-[#344054] mb-2"
+                      className="mb-2 block text-[15px] font-semibold text-[rgb(var(--color-foreground))]"
                     >
                       Verification code
                     </label>
@@ -344,7 +345,7 @@ export default function SignInPage() {
                       value={code}
                       onChange={(e) => setCode(e.target.value)}
                       placeholder="Enter 6-digit code"
-                      className="w-full h-[56px] rounded-2xl border border-[#d0d5dd] px-4 text-[16px] text-[#101828] placeholder:text-[#98a2b3] outline-none focus:border-[#2563eb] focus:ring-4 focus:ring-blue-100 tracking-widest text-center text-xl"
+                      className="h-[56px] w-full rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] px-4 text-center text-[16px] text-xl tracking-widest text-[rgb(var(--color-foreground))] placeholder:text-[rgb(var(--color-muted))] outline-none transition focus:border-[rgb(var(--color-primary))] focus:ring-4 focus:ring-[rgba(47,107,98,0.12)]"
                       disabled={!isLoaded || isSubmitting}
                       maxLength={6}
                       required
@@ -360,7 +361,7 @@ export default function SignInPage() {
                   <button
                     type="submit"
                     disabled={!isLoaded || isSubmitting}
-                    className="w-full h-[60px] rounded-2xl bg-[#2563eb] text-white text-[18px] font-semibold hover:bg-[#1d4ed8] transition disabled:opacity-60"
+                    className="h-[60px] w-full rounded-2xl bg-[rgb(var(--color-primary))] text-[18px] font-semibold text-[rgb(var(--color-primary-foreground))] transition hover:opacity-90 disabled:opacity-60"
                   >
                     {isSubmitting ? "Verifying..." : "Verify"}
                   </button>
@@ -368,7 +369,7 @@ export default function SignInPage() {
                   <button
                     type="button"
                     onClick={handleStartOver}
-                    className="w-full h-[52px] rounded-2xl border border-[#d0d5dd] text-[#344054] font-medium hover:bg-[#fafafa]"
+                    className="h-[52px] w-full rounded-2xl border border-[rgb(var(--color-border))] text-[rgb(var(--color-foreground))] font-medium hover:bg-[rgb(var(--color-secondary))]"
                   >
                     Start over
                   </button>
@@ -378,11 +379,11 @@ export default function SignInPage() {
           </div>
 
           {/* 注册链接 */}
-          <div className="mt-8 text-center text-[16px] text-[#667085]">
+          <div className="mt-8 text-center text-[16px] text-[rgb(var(--color-muted))]">
             <span>Don&apos;t have an account? </span>
-            <a href="/sign-up" className="font-semibold text-[#2563eb] hover:text-[#1d4ed8]">
+            <Link href="/sign-up" className="font-semibold text-[rgb(var(--color-primary))] hover:opacity-80">
               Sign up
-            </a>
+            </Link>
           </div>
         </div>
       </div>

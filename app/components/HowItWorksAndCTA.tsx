@@ -97,7 +97,7 @@ export function HowItWorksAndCTA() {
                   </div>
 
                   <div className="mt-4 flex items-center gap-2">
-                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[rgba(79,70,229,0.10)] text-xs font-semibold text-[rgb(var(--color-primary))]">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[rgba(47,107,98,0.10)] text-xs font-semibold text-[rgb(var(--color-primary))]">
                       {step.number}
                     </span>
                     <h3 className="text-sm font-semibold text-[rgb(var(--color-foreground))]">
@@ -122,15 +122,15 @@ export function HowItWorksAndCTA() {
 
         <div className="grid gap-6 rounded-[32px] border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] px-6 py-6 shadow-sm lg:grid-cols-[minmax(0,1fr)_320px] lg:items-center sm:px-8 sm:py-8">
           <div>
-            <p className="inline-flex items-center rounded-full bg-[rgba(79,70,229,0.08)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[rgb(var(--color-primary))]">
-              Trusted community
+            <p className="inline-flex items-center rounded-full bg-[rgba(47,107,98,0.10)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[rgb(var(--color-primary))]">
+              Join verified homes worldwide
             </p>
             <h3 className="mt-4 text-2xl font-semibold tracking-tight text-[rgb(var(--color-foreground))] sm:text-[2rem]">
-              Join a trusted home-exchange community
+              Create your account and start exploring
             </h3>
             <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[rgb(var(--color-muted))] sm:text-base">
-              Create your profile, complete verification, and start exploring
-              mid- to long-term stays with verified members worldwide.
+              Join in minutes, complete verification, and unlock mid- to
+              long-term stays with trusted members around the world.
             </p>
 
             <div className="mt-5 flex flex-wrap gap-3">
@@ -142,7 +142,7 @@ export function HowItWorksAndCTA() {
                     key={item.label}
                     className="inline-flex items-center gap-2 rounded-full border border-[rgb(var(--color-border))] bg-[rgb(var(--color-background))] px-3 py-2 text-xs text-[rgb(var(--color-foreground))] sm:text-sm"
                   >
-                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[rgba(79,70,229,0.10)] text-[rgb(var(--color-primary))]">
+                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[rgba(47,107,98,0.10)] text-[rgb(var(--color-primary))]">
                       <Icon size={14} />
                     </span>
                     <span>{item.label}</span>
@@ -153,21 +153,22 @@ export function HowItWorksAndCTA() {
           </div>
 
           <div className="lg:justify-self-end">
-            <div className="relative overflow-hidden rounded-[28px] border border-[rgb(var(--color-border))] bg-[rgb(var(--color-background))] p-5 shadow-sm sm:p-6">
-              <div className="absolute -right-6 -top-6 h-20 w-20 rounded-full bg-[rgba(79,70,229,0.12)] blur-2xl" />
-              <div className="absolute -bottom-4 -left-4 h-16 w-16 rounded-full bg-[rgba(56,189,248,0.10)] blur-2xl" />
+            <div className="relative overflow-hidden rounded-[28px] border border-[rgba(47,107,98,0.18)] bg-[rgb(var(--color-background))] p-5 shadow-[0_18px_40px_rgba(47,107,98,0.12)] sm:p-6">
+              <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-[rgba(47,107,98,0.16)] blur-2xl" />
+              <div className="absolute -bottom-4 -left-4 h-20 w-20 rounded-full bg-[rgba(198,123,92,0.14)] blur-2xl" />
 
               <div className="relative">
                 <div className="flex items-start gap-3">
-                  <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[rgba(79,70,229,0.10)] text-[rgb(var(--color-primary))]">
+                  <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[rgba(47,107,98,0.10)] text-[rgb(var(--color-primary))]">
                     <CheckCircle2 className="h-5 w-5" />
                   </span>
                   <div>
                     <p className="text-sm font-semibold text-[rgb(var(--color-foreground))]">
-                      Start with a profile in minutes
+                      Set up your account in minutes
                     </p>
                     <p className="mt-1 text-xs leading-relaxed text-[rgb(var(--color-muted))]">
-                      Apply, verify, and browse homes at your own pace.
+                      Create your profile, get verified, and start browsing
+                      trusted homes right away.
                     </p>
                   </div>
                 </div>
@@ -175,14 +176,14 @@ export function HowItWorksAndCTA() {
                 <div className="mt-5 flex flex-col gap-3">
                   <Link
                     href="/sign-up"
-                    className="inline-flex items-center justify-center gap-2 rounded-full bg-[rgb(var(--color-primary))] px-5 py-3 text-sm font-medium text-[rgb(var(--color-primary-foreground))] transition hover:opacity-90"
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[rgb(var(--color-primary))] to-[rgb(var(--color-accent))] px-5 py-3 text-sm font-medium text-[rgb(var(--color-primary-foreground))] shadow-[0_14px_30px_rgba(47,107,98,0.24)] transition hover:scale-[1.01] hover:shadow-[0_18px_36px_rgba(47,107,98,0.30)]"
                   >
-                    Apply to join
+                    Create your account
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                   <Link
                     href="/properties"
-                    className="inline-flex items-center justify-center rounded-full border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] px-5 py-3 text-sm font-medium text-[rgb(var(--color-foreground))] transition hover:border-[rgb(var(--color-primary))]"
+                    className="inline-flex items-center justify-center rounded-full border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] px-5 py-3 text-sm font-medium text-[rgb(var(--color-foreground))] transition hover:border-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-background))]"
                   >
                     Browse verified homes
                   </Link>

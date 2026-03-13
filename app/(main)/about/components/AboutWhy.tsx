@@ -13,8 +13,8 @@ export function AboutWhy() {
       title: "Designed for 1–12 months",
       desc: "Optimised for medium to long-term living, not quick vacation stays.",
       icon: Calendar,
-      iconColor: "text-blue-600 dark:text-blue-400",
-      bgColor: "bg-blue-100 dark:bg-blue-900/30",
+      iconColor: "text-[rgb(var(--color-primary))] dark:text-[rgb(var(--color-primary))]",
+      bgColor: "bg-[rgba(47,107,98,0.10)] dark:bg-[rgba(124,177,164,0.18)]",
     },
     {
       title: "Points-based exchange",
@@ -27,8 +27,8 @@ export function AboutWhy() {
       title: "Human-supported matching",
       desc: "Our team curates matches and logistics so you don't have to figure it out alone.",
       icon: Users,
-      iconColor: "text-purple-600 dark:text-purple-400",
-      bgColor: "bg-purple-100 dark:bg-purple-900/30",
+      iconColor: "text-[rgb(var(--color-accent))] dark:text-[rgb(var(--color-accent))]",
+      bgColor: "bg-[rgba(198,123,92,0.12)] dark:bg-[rgba(214,155,129,0.18)]",
     },
   ];
 

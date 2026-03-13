@@ -19,11 +19,11 @@ export function AuthBrandPanel({
   const isSignUp = variant === "sign-up";
 
   return (
-    <div className="hidden lg:flex lg:w-1/2 xl:w-3/5 bg-gradient-to-br from-[#4f46e5] via-[#6366f1] to-[#8b5cf6] relative overflow-hidden">
+    <div className="hidden lg:flex lg:w-1/2 xl:w-3/5 bg-gradient-to-br from-[#234B45] via-[#2F6B62] to-[#4B7269] relative overflow-hidden">
       {/* 背景装饰 */}
       <div className="absolute inset-0">
         <div className="absolute top-16 left-10 w-72 h-72 bg-white/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-[rgba(198,123,92,0.18)] rounded-full blur-3xl" />
         <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-white/5 rounded-full blur-2xl" />
       </div>
 
@@ -50,13 +50,13 @@ export function AuthBrandPanel({
           <h1 className="text-4xl xl:text-5xl font-bold text-white leading-[1.1] tracking-[-0.02em] mb-4 max-w-[550px]">
             {isSignUp ? (
               <>
-                Join our <span className="text-yellow-300">global</span>
+                Join our <span className="text-[#F2C9B6]">global</span>
                 <br />
                 community today.
               </>
             ) : (
               <>
-                Live like a <span className="text-yellow-300">local</span>
+                Live like a <span className="text-[#F2C9B6]">local</span>
                 <br />
                 anywhere in the world.
               </>
@@ -103,9 +103,9 @@ export function AuthBrandPanel({
 
             {/* 验证徽章 - 在图片 2 和 3 的右侧 */}
             <div className="absolute left-[340px] xl:left-[420px] top-40 xl:top-44 bg-white rounded-[20px] px-4 py-3 shadow-xl flex items-center gap-3 rotate-6 z-20 transition-all duration-300 hover:rotate-0 hover:scale-105 cursor-pointer">
-              <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-[rgba(47,107,98,0.12)] flex items-center justify-center">
                 <svg
-                  className="w-5 h-5 text-emerald-600"
+                  className="w-5 h-5 text-[rgb(var(--color-primary))]"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"

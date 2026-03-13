@@ -6,6 +6,16 @@ import { useUser } from "@clerk/nextjs";
 
 type Gender = "" | "male" | "female" | "other";
 
+type CustomPublicMetadata = Record<string, unknown> & {
+  gender?: Gender | null;
+  birthday?: string | null;
+  languages?: string[] | string | null;
+  hostAcceptsKids?: boolean;
+  hostAcceptsPets?: boolean;
+  hostAllowsSmoking?: boolean;
+  hostAllowsParties?: boolean;
+};
+
 export default function CustomFieldsPage() {
   const { user, isLoaded } = useUser();
 
@@ -26,7 +36,7 @@ export default function CustomFieldsPage() {
   useEffect(() => {
     if (!isLoaded || !user) return;
 
-    const pm = (user.publicMetadata || {}) as any;
+    const pm = (user.publicMetadata || {}) as CustomPublicMetadata;
 
     setGender((pm.gender as Gender) || "");
     setBirthday((pm.birthday as string) || "");
@@ -53,7 +63,7 @@ export default function CustomFieldsPage() {
 
     try {
       // 保留原来的 publicMetadata 其他字段
-      const current = (user.publicMetadata || {}) as any;
+      const current = (user.publicMetadata || {}) as CustomPublicMetadata;
 
       const langsArray =
         languages.trim().length === 0
@@ -63,8 +73,7 @@ export default function CustomFieldsPage() {
               .map((s) => s.trim())
               .filter(Boolean);
 
-      // 构造 payload，用 any 绕过 Clerk 的 TS 限制
-      const updatePayload: any = {
+      const updatePayload = {
         publicMetadata: {
           ...current,
           gender: gender || null,
@@ -77,7 +86,7 @@ export default function CustomFieldsPage() {
         },
       };
 
-      await (user as any).update(updatePayload);
+      await user.update(updatePayload);
 
       setMessage("已保存 ✅");
     } catch (e) {
@@ -109,7 +118,7 @@ export default function CustomFieldsPage() {
               onClick={() => setGender(g)}
               className={`px-3 py-1 rounded-full border text-xs capitalize ${
                 gender === g
-                  ? "border-indigo-500 bg-indigo-50 text-indigo-700"
+                  ? "border-[rgb(var(--color-primary))] bg-[rgba(47,107,98,0.10)] text-[rgb(var(--color-primary))]"
                   : "border-slate-200 text-slate-600 hover:border-slate-400"
               }`}
             >
@@ -129,7 +138,7 @@ export default function CustomFieldsPage() {
           type="date"
           value={birthday || ""}
           onChange={(e) => setBirthday(e.target.value)}
-          className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))]"
         />
       </section>
 
@@ -141,7 +150,7 @@ export default function CustomFieldsPage() {
           value={languages}
           onChange={(e) => setLanguages(e.target.value)}
           placeholder="例如: English, 中文, 日本語"
-          className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))]"
         />
         <p className="text-xs text-slate-400">
           Multiple languages ​are separated by commas, for example: <code>English, Chinese, Japanese</code>
@@ -193,7 +202,7 @@ export default function CustomFieldsPage() {
           type="button"
           onClick={handleSave}
           disabled={saving}
-          className="inline-flex items-center rounded-full bg-indigo-600 px-5 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
+          className="inline-flex items-center rounded-full bg-[rgb(var(--color-primary))] px-5 py-2 text-sm font-medium text-[rgb(var(--color-primary-foreground))] hover:opacity-90 disabled:opacity-60"
         >
           {saving ? "Saving..." : "保存"}
         </button>
