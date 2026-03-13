@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { Header } from "../../components/Header";
 import { useTheme } from "../../hooks/useTheme"
+import { useUser } from "@clerk/nextjs";
 
 
 import PropertySearchBar from "./components/PropertySearchBar";
@@ -13,6 +14,7 @@ import type { PropertyFilters } from "./lib/propertyData";
 export default function PropertiesPage() {
   // 主题（和首页保持一致）
   const { theme, toggleTheme } = useTheme();
+  const { isSignedIn } = useUser();
 
   // 当前生效的筛选条件
   const [filters, setFilters] = useState<PropertyFilters>({
@@ -23,7 +25,11 @@ export default function PropertiesPage() {
 
   return (
     <div className="min-h-screen bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">
-      <Header theme={theme} toggleTheme={toggleTheme} />
+      <Header
+        theme={theme}
+        toggleTheme={toggleTheme}
+        variant={isSignedIn ? "authed" : "public"}
+      />
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
         {/* 顶部搜索条 */}
@@ -31,7 +37,10 @@ export default function PropertiesPage() {
 
         {/* 主体：左边列表 + 右边积分 map */}
         <section className="mt-8">
-          <PropertyListSection filters={filters} mode="public"/>
+          <PropertyListSection
+            filters={filters}
+            mode={isSignedIn ? "authed" : "public"}
+          />
         </section>
       </main>
     </div>

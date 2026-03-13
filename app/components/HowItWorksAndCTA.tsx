@@ -3,7 +3,15 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { CheckCircle2, Home, Coins, MapPin } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle2,
+  Coins,
+  Headphones,
+  Home,
+  MapPin,
+  ShieldCheck,
+} from "lucide-react";
 
 const steps = [
   {
@@ -40,37 +48,45 @@ const steps = [
   },
 ];
 
+const ctaHighlights = [
+  {
+    label: "100% verified members",
+    icon: ShieldCheck,
+  },
+  {
+    label: "Points-based stays",
+    icon: Coins,
+  },
+  {
+    label: "Human support",
+    icon: Headphones,
+  },
+];
+
 export function HowItWorksAndCTA() {
   return (
     <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
-      {/* 圆角背景容器 */}
-      <div 
-        className="max-w-7xl mx-auto rounded-[40px] px-6 sm:px-10 lg:px-12 py-10 sm:py-14"
-        style={{ backgroundColor: "#f3f4f6" }}
+      <div
+        className="max-w-7xl mx-auto rounded-[40px] border border-[rgb(var(--color-border))] bg-[rgb(var(--color-secondary))] px-6 py-10 shadow-sm sm:px-10 sm:py-14 lg:px-12"
       >
-        
-        {/* How it works 部分 */}
         <div className="mb-10">
-          {/* 标题 */}
           <div className="max-w-2xl mx-auto text-center mb-8">
-            <h2 className="text-2xl font-semibold tracking-tight text-gray-900">
+            <h2 className="text-2xl font-semibold tracking-tight text-[rgb(var(--color-foreground))]">
               How it works
             </h2>
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="mt-2 text-sm text-[rgb(var(--color-muted))]">
               Join our curated home-exchange community in four simple steps.
             </p>
           </div>
 
-          {/* 四个步骤卡片 */}
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {steps.map((step) => {
               const Icon = step.icon;
               return (
                 <div
                   key={step.number}
-                  className="flex flex-col rounded-2xl border border-gray-200 bg-white p-4 shadow-sm"
+                  className="flex flex-col rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] p-4 shadow-sm"
                 >
-                  {/* 图片 */}
                   <div className="relative w-full h-24 overflow-hidden rounded-xl">
                     <Image
                       src={step.image}
@@ -80,24 +96,21 @@ export function HowItWorksAndCTA() {
                     />
                   </div>
 
-                  {/* 数字 + 标题 */}
                   <div className="mt-4 flex items-center gap-2">
-                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-600">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[rgba(79,70,229,0.10)] text-xs font-semibold text-[rgb(var(--color-primary))]">
                       {step.number}
                     </span>
-                    <h3 className="text-sm font-semibold text-gray-900">
+                    <h3 className="text-sm font-semibold text-[rgb(var(--color-foreground))]">
                       {step.title}
                     </h3>
                   </div>
 
-                  {/* 描述 */}
-                  <p className="mt-2 text-xs leading-relaxed text-gray-500 flex-1">
+                  <p className="mt-2 flex-1 text-xs leading-relaxed text-[rgb(var(--color-muted))]">
                     {step.description}
                   </p>
 
-                  {/* 图标 */}
                   <div className="mt-3 flex justify-end">
-                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 text-indigo-500">
+                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[rgb(var(--color-secondary))] text-[rgb(var(--color-primary))]">
                       <Icon size={12} />
                     </span>
                   </div>
@@ -107,40 +120,74 @@ export function HowItWorksAndCTA() {
           </div>
         </div>
 
-        {/* CTA 部分 - 渐变紫色背景，和登录页左侧风格统一 */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#4f46e5] via-[#6366f1] to-[#8b5cf6] px-6 py-8 text-center">
-          {/* 背景装饰 */}
-          <div className="absolute top-0 left-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -translate-x-1/2 -translate-y-1/2" />
-          <div className="absolute bottom-0 right-0 w-40 h-40 bg-white/10 rounded-full blur-2xl translate-x-1/2 translate-y-1/2" />
-          
-          <div className="relative z-10">
-            <p className="text-[10px] font-semibold tracking-widest text-yellow-300 uppercase mb-2">
-              Invite-only community
+        <div className="grid gap-6 rounded-[32px] border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] px-6 py-6 shadow-sm lg:grid-cols-[minmax(0,1fr)_320px] lg:items-center sm:px-8 sm:py-8">
+          <div>
+            <p className="inline-flex items-center rounded-full bg-[rgba(79,70,229,0.08)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[rgb(var(--color-primary))]">
+              Trusted community
             </p>
-            <h3 className="text-lg font-semibold text-white mb-2">
-              Ready to exchange your home?
+            <h3 className="mt-4 text-2xl font-semibold tracking-tight text-[rgb(var(--color-foreground))] sm:text-[2rem]">
+              Join a trusted home-exchange community
             </h3>
-            <p className="text-xs text-white/70 max-w-sm mx-auto mb-5">
-              Join a trusted community of homeowners. No money, no hidden fees.
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[rgb(var(--color-muted))] sm:text-base">
+              Create your profile, complete verification, and start exploring
+              mid- to long-term stays with verified members worldwide.
             </p>
 
-            {/* 按钮 */}
-            <div className="flex items-center justify-center gap-3">
-              <Link
-                href="/sign-up"
-                className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-white text-indigo-600 text-sm font-medium hover:bg-white/90 transition shadow-lg"
-              >
-                Get started
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </Link>
-              <Link
-                href="/about"
-                className="inline-flex items-center px-5 py-2 rounded-full border border-white/30 text-white text-sm font-medium hover:bg-white/10 transition"
-              >
-                Learn more
-              </Link>
+            <div className="mt-5 flex flex-wrap gap-3">
+              {ctaHighlights.map((item) => {
+                const Icon = item.icon;
+
+                return (
+                  <div
+                    key={item.label}
+                    className="inline-flex items-center gap-2 rounded-full border border-[rgb(var(--color-border))] bg-[rgb(var(--color-background))] px-3 py-2 text-xs text-[rgb(var(--color-foreground))] sm:text-sm"
+                  >
+                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[rgba(79,70,229,0.10)] text-[rgb(var(--color-primary))]">
+                      <Icon size={14} />
+                    </span>
+                    <span>{item.label}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="lg:justify-self-end">
+            <div className="relative overflow-hidden rounded-[28px] border border-[rgb(var(--color-border))] bg-[rgb(var(--color-background))] p-5 shadow-sm sm:p-6">
+              <div className="absolute -right-6 -top-6 h-20 w-20 rounded-full bg-[rgba(79,70,229,0.12)] blur-2xl" />
+              <div className="absolute -bottom-4 -left-4 h-16 w-16 rounded-full bg-[rgba(56,189,248,0.10)] blur-2xl" />
+
+              <div className="relative">
+                <div className="flex items-start gap-3">
+                  <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[rgba(79,70,229,0.10)] text-[rgb(var(--color-primary))]">
+                    <CheckCircle2 className="h-5 w-5" />
+                  </span>
+                  <div>
+                    <p className="text-sm font-semibold text-[rgb(var(--color-foreground))]">
+                      Start with a profile in minutes
+                    </p>
+                    <p className="mt-1 text-xs leading-relaxed text-[rgb(var(--color-muted))]">
+                      Apply, verify, and browse homes at your own pace.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-5 flex flex-col gap-3">
+                  <Link
+                    href="/sign-up"
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-[rgb(var(--color-primary))] px-5 py-3 text-sm font-medium text-[rgb(var(--color-primary-foreground))] transition hover:opacity-90"
+                  >
+                    Apply to join
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                  <Link
+                    href="/properties"
+                    className="inline-flex items-center justify-center rounded-full border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] px-5 py-3 text-sm font-medium text-[rgb(var(--color-foreground))] transition hover:border-[rgb(var(--color-primary))]"
+                  >
+                    Browse verified homes
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
         </div>

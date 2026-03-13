@@ -15,12 +15,36 @@ type Props = {
   mode?: "public" | "authed";
 };
 
+type PropertyApiItem = {
+  id: number;
+  city: string | null;
+  country: string | null;
+  title: string | null;
+  guests: number | null;
+  beds: number | null;
+  reference_points?: number | null;
+  tags?: string[] | null;
+  photos?: string[] | null;
+  verification_status?: string | null;
+};
+
+type PropertiesApiResponse = {
+  properties?: PropertyApiItem[];
+};
+
+type FavouriteApiResponse = {
+  favourites?: Array<{ property?: { id?: number | null } | null }>;
+};
+
+const AUTHED_PAGE_SIZE = 6;
+
 export default function PropertyListSection({ filters, mode = "public" }: Props) {
   const router = useRouter();
   const { user, isLoaded } = useUser();
   const [favouriteIds, setFavouriteIds] = useState<number[]>([]);
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
+  const [visibleCount, setVisibleCount] = useState(AUTHED_PAGE_SIZE);
 
   // 加载房产数据
   useEffect(() => {
@@ -32,10 +56,9 @@ export default function PropertyListSection({ filters, mode = "public" }: Props)
           setProperties([]);
           return;
         }
-        const data = await response.json();
-        console.log("Properties data:", data); // 调试用，确认后可删除
+        const data: PropertiesApiResponse = await response.json();
 
-        const formattedProperties: Property[] = (data.properties || []).map((prop: any) => ({
+        const formattedProperties: Property[] = (data.properties || []).map((prop) => ({
           id: prop.id,
           city: prop.city || "Unknown",
           country: prop.country || "",
@@ -74,8 +97,10 @@ export default function PropertyListSection({ filters, mode = "public" }: Props)
           setLoading(false);
           return;
         }
-        const data = await response.json();
-        const ids = (data.favourites || []).map((fav: any) => fav.property?.id).filter(Boolean);
+        const data: FavouriteApiResponse = await response.json();
+        const ids = (data.favourites || [])
+          .map((fav) => fav.property?.id)
+          .filter((id): id is number => typeof id === "number");
         setFavouriteIds(ids);
       } catch (error) {
         console.error("Error loading favourites:", error);
@@ -94,13 +119,23 @@ export default function PropertyListSection({ filters, mode = "public" }: Props)
   };
 
   const filtered = properties.filter((p) => matchesFilters(p, filters));
+  const visibleProperties =
+    mode === "authed" ? filtered.slice(0, visibleCount) : filtered;
+  const hasMoreAuthed = mode === "authed" && visibleCount < filtered.length;
+
+  // 筛选条件变化时，已登录列表回到第一页
+  useEffect(() => {
+    if (mode !== "authed") return;
+    setVisibleCount(AUTHED_PAGE_SIZE);
+  }, [mode, filters.query, filters.type, filters.pointsRange, properties.length]);
 
   const handleLoadMore = () => {
     if (mode === "public") {
-      router.push("/login");
-    } else {
-      console.log("TODO: load more properties for authed user");
+      router.push("/sign-in");
+      return;
     }
+
+    setVisibleCount((prev) => Math.min(prev + AUTHED_PAGE_SIZE, filtered.length));
   };
 
   if (loading) {
@@ -121,7 +156,7 @@ export default function PropertyListSection({ filters, mode = "public" }: Props)
             No properties match your filters. Try adjusting destination, type or points range.
           </div>
         ) : (
-          filtered.map((p) => (
+          visibleProperties.map((p) => (
             <PropertyCard
               key={p.id}
               property={p}
@@ -133,13 +168,13 @@ export default function PropertyListSection({ filters, mode = "public" }: Props)
         )}
       </div>
 
-      {filtered.length > 0 && (
+      {filtered.length > 0 && (mode === "public" || hasMoreAuthed) && (
         <div className="flex justify-center mt-6">
           <button
             type="button"
             onClick={handleLoadMore}
             className="rounded-full border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] px-6 py-2 text-sm text-[rgb(var(--color-foreground))] hover:border-[rgb(var(--color-primary))] hover:bg-[rgb(var(--color-card-foreground))/5] transition">
-            Load more properties
+            {mode === "public" ? "Sign in to view all properties" : "Load more properties"}
           </button>
         </div>
       )}
