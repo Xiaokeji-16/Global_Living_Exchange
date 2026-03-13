@@ -118,7 +118,7 @@ export default function CustomFieldsPage() {
               onClick={() => setGender(g)}
               className={`px-3 py-1 rounded-full border text-xs capitalize ${
                 gender === g
-                  ? "border-[rgb(var(--color-primary))] bg-[rgba(47,107,98,0.10)] text-[rgb(var(--color-primary))]"
+                  ? "border-[rgb(var(--color-primary))] bg-[rgba(85,107,142,0.10)] text-[rgb(var(--color-primary))]"
                   : "border-slate-200 text-slate-600 hover:border-slate-400"
               }`}
             >

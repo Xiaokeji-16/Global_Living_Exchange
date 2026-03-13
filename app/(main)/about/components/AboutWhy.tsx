@@ -14,7 +14,7 @@ export function AboutWhy() {
       desc: "Optimised for medium to long-term living, not quick vacation stays.",
       icon: Calendar,
       iconColor: "text-[rgb(var(--color-primary))] dark:text-[rgb(var(--color-primary))]",
-      bgColor: "bg-[rgba(47,107,98,0.10)] dark:bg-[rgba(124,177,164,0.18)]",
+      bgColor: "bg-[rgba(85,107,142,0.10)] dark:bg-[rgba(156,176,208,0.18)]",
     },
     {
       title: "Points-based exchange",
@@ -28,7 +28,7 @@ export function AboutWhy() {
       desc: "Our team curates matches and logistics so you don't have to figure it out alone.",
       icon: Users,
       iconColor: "text-[rgb(var(--color-accent))] dark:text-[rgb(var(--color-accent))]",
-      bgColor: "bg-[rgba(198,123,92,0.12)] dark:bg-[rgba(214,155,129,0.18)]",
+      bgColor: "bg-[rgba(180,122,90,0.12)] dark:bg-[rgba(205,163,138,0.18)]",
     },
   ];
 

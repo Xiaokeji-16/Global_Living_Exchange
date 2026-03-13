@@ -5,32 +5,32 @@
 
 :root {
   /* Light theme colors */
-  --color-background: 247 243 236;
-  --color-foreground: 23 33 43;
-  --color-card: 255 253 252;
-  --color-card-foreground: 23 33 43;
-  --color-primary: 47 107 98;
+  --color-background: 246 243 238;
+  --color-foreground: 29 41 57;
+  --color-card: 252 248 243;
+  --color-card-foreground: 29 41 57;
+  --color-primary: 85 107 142;
   --color-primary-foreground: 255 255 255;
-  --color-secondary: 238 243 240;
-  --color-secondary-foreground: 23 33 43;
-  --color-muted: 102 112 133;
-  --color-border: 216 224 219;
-  --color-accent: 198 123 92;
+  --color-secondary: 239 243 247;
+  --color-secondary-foreground: 29 41 57;
+  --color-muted: 103 114 132;
+  --color-border: 217 223 232;
+  --color-accent: 180 122 90;
 }
 
 .dark {
   /* Dark theme colors */
-  --color-background: 24 32 30;
-  --color-foreground: 236 239 236;
-  --color-card: 29 40 37;
-  --color-card-foreground: 236 239 236;
-  --color-primary: 124 177 164;
-  --color-primary-foreground: 16 27 24;
-  --color-secondary: 37 49 46;
-  --color-secondary-foreground: 236 239 236;
-  --color-muted: 157 167 164;
-  --color-border: 74 89 84;
-  --color-accent: 214 155 129;
+  --color-background: 20 26 34;
+  --color-foreground: 233 239 246;
+  --color-card: 27 35 46;
+  --color-card-foreground: 233 239 246;
+  --color-primary: 156 176 208;
+  --color-primary-foreground: 20 26 34;
+  --color-secondary: 34 44 58;
+  --color-secondary-foreground: 233 239 246;
+  --color-muted: 148 160 178;
+  --color-border: 72 84 102;
+  --color-accent: 205 163 138;
 }
 
 * {

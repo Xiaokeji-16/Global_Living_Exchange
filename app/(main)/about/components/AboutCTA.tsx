@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export function AboutCTA() {
   return (
-    <section className="mt-4 flex flex-col gap-4 rounded-3xl bg-gradient-to-r from-[#234B45] via-[#2F6B62] to-[#C67B5C] px-6 py-8 text-white sm:px-10 sm:py-10 md:flex-row md:items-center md:justify-between">
+    <section className="mt-4 flex flex-col gap-4 rounded-3xl bg-gradient-to-r from-[#3F526E] via-[#556B8E] to-[#B47A5A] px-6 py-8 text-white sm:px-10 sm:py-10 md:flex-row md:items-center md:justify-between">
       <div>
         <h2 className="text-2xl font-semibold">
           Ready to explore your next city?

@@ -6,7 +6,7 @@ export function AboutHero() {
   return (
     <section className="grid gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] items-center">
       <div>
-        <span className="inline-flex items-center rounded-full bg-[rgba(47,107,98,0.10)] px-4 py-1 text-xs font-medium text-[rgb(var(--color-primary))]">
+        <span className="inline-flex items-center rounded-full bg-[rgba(85,107,142,0.10)] px-4 py-1 text-xs font-medium text-[rgb(var(--color-primary))]">
           Reimagining home exchange
         </span>
         <h1 className="mt-4 text-4xl sm:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">
@@ -37,7 +37,7 @@ export function AboutHero() {
       </div>
 
       {/* 右侧占位卡片，之后可以换成真实房源叠图 */}
-      <div className="relative h-72 sm:h-80 lg:h-96 overflow-hidden rounded-3xl bg-gradient-to-tr from-[#234B45] via-[#2F6B62] to-[#C67B5C] shadow-xl">
+      <div className="relative h-72 sm:h-80 lg:h-96 overflow-hidden rounded-3xl bg-gradient-to-tr from-[#3F526E] via-[#556B8E] to-[#B47A5A] shadow-xl">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.35)_0,_transparent_55%)]" />
         <div className="absolute bottom-6 left-6 right-6 rounded-2xl bg-black/40 backdrop-blur px-4 py-3 text-sm text-white">
           <div className="font-medium">Lisbon · 6 months</div>

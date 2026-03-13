@@ -251,7 +251,7 @@ export default function SignUpPage() {
                           value={firstName}
                           onChange={(e) => setFirstName(e.target.value)}
                           placeholder="John"
-                          className="h-[56px] w-full rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] px-4 text-[16px] text-[rgb(var(--color-foreground))] placeholder:text-[rgb(var(--color-muted))] outline-none transition focus:border-[rgb(var(--color-primary))] focus:ring-4 focus:ring-[rgba(47,107,98,0.12)]"
+                          className="h-[56px] w-full rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] px-4 text-[16px] text-[rgb(var(--color-foreground))] placeholder:text-[rgb(var(--color-muted))] outline-none transition focus:border-[rgb(var(--color-primary))] focus:ring-4 focus:ring-[rgba(85,107,142,0.12)]"
                           disabled={!isLoaded || isSubmitting || isOAuthLoading !== null}
                           required
                         />
@@ -270,7 +270,7 @@ export default function SignUpPage() {
                           value={lastName}
                           onChange={(e) => setLastName(e.target.value)}
                           placeholder="Doe"
-                          className="h-[56px] w-full rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] px-4 text-[16px] text-[rgb(var(--color-foreground))] placeholder:text-[rgb(var(--color-muted))] outline-none transition focus:border-[rgb(var(--color-primary))] focus:ring-4 focus:ring-[rgba(47,107,98,0.12)]"
+                          className="h-[56px] w-full rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] px-4 text-[16px] text-[rgb(var(--color-foreground))] placeholder:text-[rgb(var(--color-muted))] outline-none transition focus:border-[rgb(var(--color-primary))] focus:ring-4 focus:ring-[rgba(85,107,142,0.12)]"
                           disabled={!isLoaded || isSubmitting || isOAuthLoading !== null}
                           required
                         />
@@ -291,7 +291,7 @@ export default function SignUpPage() {
                         value={emailAddress}
                         onChange={(e) => setEmailAddress(e.target.value)}
                         placeholder="Enter your email address"
-                        className="h-[56px] w-full rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] px-4 text-[16px] text-[rgb(var(--color-foreground))] placeholder:text-[rgb(var(--color-muted))] outline-none transition focus:border-[rgb(var(--color-primary))] focus:ring-4 focus:ring-[rgba(47,107,98,0.12)]"
+                        className="h-[56px] w-full rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] px-4 text-[16px] text-[rgb(var(--color-foreground))] placeholder:text-[rgb(var(--color-muted))] outline-none transition focus:border-[rgb(var(--color-primary))] focus:ring-4 focus:ring-[rgba(85,107,142,0.12)]"
                         disabled={!isLoaded || isSubmitting || isOAuthLoading !== null}
                         required
                       />
@@ -311,7 +311,7 @@ export default function SignUpPage() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="Create a password"
-                        className="h-[56px] w-full rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] px-4 text-[16px] text-[rgb(var(--color-foreground))] placeholder:text-[rgb(var(--color-muted))] outline-none transition focus:border-[rgb(var(--color-primary))] focus:ring-4 focus:ring-[rgba(47,107,98,0.12)]"
+                        className="h-[56px] w-full rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] px-4 text-[16px] text-[rgb(var(--color-foreground))] placeholder:text-[rgb(var(--color-muted))] outline-none transition focus:border-[rgb(var(--color-primary))] focus:ring-4 focus:ring-[rgba(85,107,142,0.12)]"
                         disabled={!isLoaded || isSubmitting || isOAuthLoading !== null}
                         required
                       />
@@ -364,7 +364,7 @@ export default function SignUpPage() {
                       value={code}
                       onChange={(e) => setCode(e.target.value)}
                       placeholder="Enter 6-digit code"
-                      className="h-[56px] w-full rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] px-4 text-center text-[16px] text-xl tracking-widest text-[rgb(var(--color-foreground))] placeholder:text-[rgb(var(--color-muted))] outline-none transition focus:border-[rgb(var(--color-primary))] focus:ring-4 focus:ring-[rgba(47,107,98,0.12)]"
+                      className="h-[56px] w-full rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] px-4 text-center text-[16px] text-xl tracking-widest text-[rgb(var(--color-foreground))] placeholder:text-[rgb(var(--color-muted))] outline-none transition focus:border-[rgb(var(--color-primary))] focus:ring-4 focus:ring-[rgba(85,107,142,0.12)]"
                       disabled={!isLoaded || isSubmitting}
                       maxLength={6}
                       required

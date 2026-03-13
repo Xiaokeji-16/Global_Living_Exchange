@@ -69,7 +69,7 @@ export function TrustSection() {
         <div className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2">
           {/* 1. Strict verification */}
           <div className="rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] p-4 sm:p-5 shadow-sm">
-            <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-[rgba(47,107,98,0.08)]">
+            <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-[rgba(85,107,142,0.08)]">
               <ShieldCheck className="w-5 h-5 text-[rgb(var(--color-primary))]" />
             </div>
             <h3 className="text-sm sm:text-base font-semibold text-[rgb(var(--color-foreground))] mb-1.5">
@@ -83,7 +83,7 @@ export function TrustSection() {
 
           {/* 2. Curated community */}
           <div className="rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] p-4 sm:p-5 shadow-sm">
-            <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-[rgba(47,107,98,0.08)]">
+            <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-[rgba(85,107,142,0.08)]">
               <Users className="w-5 h-5 text-[rgb(var(--color-primary))]" />
             </div>
             <h3 className="text-sm sm:text-base font-semibold text-[rgb(var(--color-foreground))] mb-1.5">
@@ -97,7 +97,7 @@ export function TrustSection() {
 
           {/* 3. Human support */}
           <div className="rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] p-4 sm:p-5 shadow-sm">
-            <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-[rgba(47,107,98,0.08)]">
+            <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-[rgba(85,107,142,0.08)]">
               <Headphones className="w-5 h-5 text-[rgb(var(--color-primary))]" />
             </div>
             <h3 className="text-sm sm:text-base font-semibold text-[rgb(var(--color-foreground))] mb-1.5">
@@ -111,7 +111,7 @@ export function TrustSection() {
 
           {/* 4. Quality guarantee */}
           <div className="rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] p-4 sm:p-5 shadow-sm">
-            <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-[rgba(47,107,98,0.08)]">
+            <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-[rgba(85,107,142,0.08)]">
               <BadgeCheck className="w-5 h-5 text-[rgb(var(--color-primary))]" />
             </div>
             <h3 className="text-sm sm:text-base font-semibold text-[rgb(var(--color-foreground))] mb-1.5">
