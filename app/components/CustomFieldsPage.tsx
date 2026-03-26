@@ -1,219 +1,99 @@
-// app/components/CustomFieldsPage.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useUser } from "@clerk/nextjs";
 
-type Gender = "" | "male" | "female" | "other";
-
-type CustomUnsafeMetadata = {
-  gender?: Gender | null;
-  birthday?: string | null;
-  languages?: string[] | string | null;
-  hostAcceptsKids?: boolean;
-  hostAcceptsPets?: boolean;
-  hostAllowsSmoking?: boolean;
-  hostAllowsParties?: boolean;
-  [key: string]: unknown;
-};
+type Gender = "male" | "female" | "other" | "";
 
 export default function CustomFieldsPage() {
   const { user, isLoaded } = useUser();
 
-  const [gender, setGender] = useState<Gender>("");
-  const [birthday, setBirthday] = useState<string>("");
-  const [languages, setLanguages] = useState<string>("");
+  const [gender, setGender] = useState<Gender>(
+    ((user?.unsafeMetadata?.gender as string) || "") as Gender
+  );
 
-  const [hostAcceptsKids, setHostAcceptsKids] = useState(false);
-  const [hostAcceptsPets, setHostAcceptsPets] = useState(false);
-  const [hostAllowsSmoking, setHostAllowsSmoking] = useState(false);
-  const [hostAllowsParties, setHostAllowsParties] = useState(false);
+  const [birthday, setBirthday] = useState<string>(
+    (user?.unsafeMetadata?.birthday as string) || ""
+  );
 
-  const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
-  // ---------- 初始值：从 unsafeMetadata 读 ----------
-  useEffect(() => {
-    if (!isLoaded || !user) return;
-
-    const um = (user.unsafeMetadata || {}) as CustomUnsafeMetadata;
-
-    setGender((um.gender as Gender) || "");
-    setBirthday((um.birthday as string) || "");
-
-    if (Array.isArray(um.languages)) {
-      setLanguages(um.languages.join(", "));
-    } else {
-      setLanguages((um.languages as string) || "");
-    }
-
-    setHostAcceptsKids(!!um.hostAcceptsKids);
-    setHostAcceptsPets(!!um.hostAcceptsPets);
-    setHostAllowsSmoking(!!um.hostAllowsSmoking);
-    setHostAllowsParties(!!um.hostAllowsParties);
-  }, [isLoaded, user]);
-
-  // ---------- 保存到 unsafeMetadata ----------
   const handleSave = async () => {
     if (!user) return;
 
-    setSaving(true);
-    setMessage(null);
-    setError(null);
-
     try {
-      // 保留原来的 unsafeMetadata 其他字段
-      const current = (user.unsafeMetadata || {}) as CustomUnsafeMetadata;
+      setLoading(true);
+      setMessage("");
 
-      const langsArray =
-        languages.trim().length === 0
-          ? null
-          : languages
-              .split(",")
-              .map((s) => s.trim())
-              .filter(Boolean);
+      const unsafeMetadata: Record<string, string> = {};
+
+      if (gender) {
+        unsafeMetadata.gender = gender;
+      }
+
+      if (birthday) {
+        unsafeMetadata.birthday = birthday;
+      }
 
       await user.update({
-        unsafeMetadata: {
-          ...current,
-          gender: gender || null,
-          birthday: birthday || null,
-          languages: langsArray,
-          hostAcceptsKids,
-          hostAcceptsPets,
-          hostAllowsSmoking,
-          hostAllowsParties,
-        },
+        unsafeMetadata,
       });
 
       setMessage("已保存 ✅");
-    } catch (e) {
-      console.error("Update unsafeMetadata failed:", e);
-      setError("保存失败，请稍后再试。");
+    } catch (error) {
+      console.error("Save failed:", error);
+      setMessage("保存失败 ❌");
     } finally {
-      setSaving(false);
+      setLoading(false);
     }
   };
 
   if (!isLoaded) {
-    return <div className="p-6 text-sm text-slate-500">Loading...</div>;
+    return <div className="p-4">Loading...</div>;
+  }
+
+  if (!user) {
+    return <div className="p-4">Please sign in first.</div>;
   }
 
   return (
-    <div className="p-6 space-y-6 text-sm text-slate-900">
-      {/* 性别 */}
-      <section className="space-y-2">
-        <h3 className="text-sm font-medium">Gender</h3>
-        <div className="flex gap-2">
-          {(["male", "female", "other"] as Gender[]).map((g) => (
-            <button
-              key={g}
-              type="button"
-              onClick={() => setGender(g)}
-              className={`px-3 py-1 rounded-full border text-xs capitalize ${
-                gender === g
-                  ? "border-[rgb(var(--color-primary))] bg-[rgba(85,107,142,0.10)] text-[rgb(var(--color-primary))]"
-                  : "border-slate-200 text-slate-600 hover:border-slate-400"
-              }`}
-            >
-              {g}
-            </button>
-          ))}
-        </div>
-      </section>
+    <div className="max-w-md mx-auto p-6 space-y-4 border rounded-xl shadow-sm">
+      <h1 className="text-2xl font-bold">Custom Profile Fields</h1>
 
-      {/* 生日 */}
-      <section className="space-y-2">
-        <h3 className="text-sm font-medium">
-          Birthday
-          <span className="ml-1 text-xs text-slate-400">(YYYY-MM-DD)</span>
-        </h3>
+      <div className="space-y-2">
+        <label className="block text-sm font-medium">Gender</label>
+        <select
+          value={gender}
+          onChange={(e) => setGender(e.target.value as Gender)}
+          className="w-full border rounded-lg px-3 py-2"
+        >
+          <option value="">Select gender</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <div className="space-y-2">
+        <label className="block text-sm font-medium">Birthday</label>
         <input
           type="date"
-          value={birthday || ""}
+          value={birthday}
           onChange={(e) => setBirthday(e.target.value)}
-          className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))]"
+          className="w-full border rounded-lg px-3 py-2"
         />
-      </section>
+      </div>
 
-      {/* 语言 */}
-      <section className="space-y-2">
-        <h3 className="text-sm font-medium">Languages you can host in</h3>
-        <input
-          type="text"
-          value={languages}
-          onChange={(e) => setLanguages(e.target.value)}
-          placeholder="例如: English, 中文, 日本語"
-          className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))]"
-        />
-        <p className="text-xs text-slate-400">
-          Multiple languages ​are separated by commas, for example:{" "}
-          <code>English, Chinese, Japanese</code>
-        </p>
-      </section>
+      <button
+        onClick={handleSave}
+        disabled={loading}
+        className="w-full rounded-lg px-4 py-2 border bg-black text-white disabled:opacity-50"
+      >
+        {loading ? "Saving..." : "Save"}
+      </button>
 
-      {/* Hosting 偏好 */}
-      <section className="space-y-2">
-        <h3 className="text-sm font-medium">Hosting preferences</h3>
-        <div className="space-y-1 text-sm text-slate-700">
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={hostAcceptsKids}
-              onChange={(e) => setHostAcceptsKids(e.target.checked)}
-            />
-            <span>Accept guests with children</span>
-          </label>
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={hostAcceptsPets}
-              onChange={(e) => setHostAcceptsPets(e.target.checked)}
-            />
-            <span>Accept guests with pets</span>
-          </label>
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={hostAllowsSmoking}
-              onChange={(e) => setHostAllowsSmoking(e.target.checked)}
-            />
-            <span>Allow smoking in the home</span>
-          </label>
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={hostAllowsParties}
-              onChange={(e) => setHostAllowsParties(e.target.checked)}
-            />
-            <span>Allow parties / gatherings</span>
-          </label>
-        </div>
-      </section>
-
-      {/* 操作 & 提示信息 */}
-      <section className="flex items-center gap-3 pt-2">
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={saving}
-          className="inline-flex items-center rounded-full bg-[rgb(var(--color-primary))] px-5 py-2 text-sm font-medium text-[rgb(var(--color-primary-foreground))] hover:opacity-90 disabled:opacity-60"
-        >
-          {saving ? "Saving..." : "保存"}
-        </button>
-
-        {message && (
-          <span className="text-xs text-emerald-700 bg-emerald-50 px-2 py-1 rounded-full">
-            {message}
-          </span>
-        )}
-        {error && (
-          <span className="text-xs text-red-600 bg-red-50 px-2 py-1 rounded-full">
-            {error}
-          </span>
-        )}
-      </section>
+      {message && <p className="text-sm">{message}</p>}
     </div>
   );
 }
