@@ -6,7 +6,7 @@ import { useUser } from "@clerk/nextjs";
 
 type Gender = "" | "male" | "female" | "other";
 
-type CustomPublicMetadata = Record<string, unknown> & {
+type CustomUnsafeMetadata = {
   gender?: Gender | null;
   birthday?: string | null;
   languages?: string[] | string | null;
@@ -14,6 +14,7 @@ type CustomPublicMetadata = Record<string, unknown> & {
   hostAcceptsPets?: boolean;
   hostAllowsSmoking?: boolean;
   hostAllowsParties?: boolean;
+  [key: string]: unknown;
 };
 
 export default function CustomFieldsPage() {
@@ -32,28 +33,28 @@ export default function CustomFieldsPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // ---------- 初始值：从 publicMetadata 读 ----------
+  // ---------- 初始值：从 unsafeMetadata 读 ----------
   useEffect(() => {
     if (!isLoaded || !user) return;
 
-    const pm = (user.publicMetadata || {}) as CustomPublicMetadata;
+    const um = (user.unsafeMetadata || {}) as CustomUnsafeMetadata;
 
-    setGender((pm.gender as Gender) || "");
-    setBirthday((pm.birthday as string) || "");
+    setGender((um.gender as Gender) || "");
+    setBirthday((um.birthday as string) || "");
 
-    if (Array.isArray(pm.languages)) {
-      setLanguages(pm.languages.join(", "));
+    if (Array.isArray(um.languages)) {
+      setLanguages(um.languages.join(", "));
     } else {
-      setLanguages((pm.languages as string) || "");
+      setLanguages((um.languages as string) || "");
     }
 
-    setHostAcceptsKids(!!pm.hostAcceptsKids);
-    setHostAcceptsPets(!!pm.hostAcceptsPets);
-    setHostAllowsSmoking(!!pm.hostAllowsSmoking);
-    setHostAllowsParties(!!pm.hostAllowsParties);
+    setHostAcceptsKids(!!um.hostAcceptsKids);
+    setHostAcceptsPets(!!um.hostAcceptsPets);
+    setHostAllowsSmoking(!!um.hostAllowsSmoking);
+    setHostAllowsParties(!!um.hostAllowsParties);
   }, [isLoaded, user]);
 
-  // ---------- 保存到 publicMetadata ----------
+  // ---------- 保存到 unsafeMetadata ----------
   const handleSave = async () => {
     if (!user) return;
 
@@ -62,8 +63,8 @@ export default function CustomFieldsPage() {
     setError(null);
 
     try {
-      // 保留原来的 publicMetadata 其他字段
-      const current = (user.publicMetadata || {}) as CustomPublicMetadata;
+      // 保留原来的 unsafeMetadata 其他字段
+      const current = (user.unsafeMetadata || {}) as CustomUnsafeMetadata;
 
       const langsArray =
         languages.trim().length === 0
@@ -73,8 +74,8 @@ export default function CustomFieldsPage() {
               .map((s) => s.trim())
               .filter(Boolean);
 
-      const updatePayload = {
-        publicMetadata: {
+      await user.update({
+        unsafeMetadata: {
           ...current,
           gender: gender || null,
           birthday: birthday || null,
@@ -84,13 +85,11 @@ export default function CustomFieldsPage() {
           hostAllowsSmoking,
           hostAllowsParties,
         },
-      };
-
-      await user.update(updatePayload);
+      });
 
       setMessage("已保存 ✅");
     } catch (e) {
-      console.error("Update publicMetadata failed:", e);
+      console.error("Update unsafeMetadata failed:", e);
       setError("保存失败，请稍后再试。");
     } finally {
       setSaving(false);
@@ -98,11 +97,7 @@ export default function CustomFieldsPage() {
   };
 
   if (!isLoaded) {
-    return (
-      <div className="p-6 text-sm text-slate-500">
-        Loading...
-      </div>
-    );
+    return <div className="p-6 text-sm text-slate-500">Loading...</div>;
   }
 
   return (
@@ -153,7 +148,8 @@ export default function CustomFieldsPage() {
           className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))]"
         />
         <p className="text-xs text-slate-400">
-          Multiple languages ​are separated by commas, for example: <code>English, Chinese, Japanese</code>
+          Multiple languages ​are separated by commas, for example:{" "}
+          <code>English, Chinese, Japanese</code>
         </p>
       </section>
 
