@@ -40,8 +40,7 @@ export async function GET(
           guests,
           bedrooms,
           beds,
-          bathrooms,
-          clerk_user_id
+          bathrooms
         )
       `)
       .eq("id", requestId)

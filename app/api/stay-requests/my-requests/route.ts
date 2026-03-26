@@ -1,11 +1,11 @@
 // app/api/stay-requests/my-requests/route.ts
 // 获取当前用户的所有住宿请求和预订
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { createServerSupabaseClient } from "@/lib/supabase";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const { userId } = await auth();
     if (!userId) {
@@ -25,8 +25,7 @@ export async function GET(request: NextRequest) {
           description,
           city,
           country,
-          photos,
-          clerk_user_id
+          photos
         )
       `)
       .eq("guest_user_id", userId)
@@ -51,8 +50,7 @@ export async function GET(request: NextRequest) {
           description,
           city,
           country,
-          photos,
-          clerk_user_id
+          photos
         )
       `)
       .eq("host_user_id", userId)

@@ -2,6 +2,7 @@
 "use client";
 
 import { Header } from "../../../components/Header";
+import { AuthedShell } from "../../../components/AuthedShell";
 import { useTheme } from "../../../hooks/useTheme";
 import FeedbackForm from "../../contact/components/FeedbackForm";
 import { useLogout } from "../../../hooks/useLogout";
@@ -12,7 +13,7 @@ export default function DashboardContactPage() {
 
 
   return (
-    <div className="min-h-screen bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">
+    <AuthedShell>
       {/* ✅ 登录版 Header，一定要加 variant="authed" */}
       <Header
         theme={theme}
@@ -33,6 +34,6 @@ export default function DashboardContactPage() {
 
         <FeedbackForm mode="authed"/>
       </main>
-    </div>
+    </AuthedShell>
   );
 }

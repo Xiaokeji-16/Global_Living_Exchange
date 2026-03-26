@@ -31,7 +31,9 @@ export type InboxItem = {
   propertyName?: string;
   propertyLocation?: string;
   feedbackMessage?: string;
-  raw?: any;
+  raw?: {
+    id?: string;
+  };
   propertyDetails?: {
     description?: string;
     property_type?: string;
@@ -88,9 +90,9 @@ export default function AdminInboxPage() {
         const first = json.items.find((it) => it.category === category);
         if (first) setSelectedId(first.id);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setError(err.message ?? "Unknown error");
+      setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
       setLoading(false);
     }
@@ -469,7 +471,7 @@ export default function AdminInboxPage() {
                   )}
                 </div>
 
-                {selectedItem.status === "pending" && (
+                {selectedItem.status === "pending" && selectedItem.category !== "feedback" && (
                   <div className="mt-auto flex flex-wrap justify-end gap-2">
                     <button
                       type="button"
@@ -487,6 +489,13 @@ export default function AdminInboxPage() {
                       <CheckCircle2 size={16} />
                       Approve
                     </button>
+                  </div>
+                )}
+
+                {selectedItem.status === "pending" && selectedItem.category === "feedback" && (
+                  <div className="mt-auto text-right text-xs text-[rgb(var(--color-muted))]">
+                    Feedback items are displayed for review only and do not require approve or
+                    deny actions.
                   </div>
                 )}
 

@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useUser } from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
 import Link from "next/link";
 
 type Favourite = {
@@ -14,14 +14,23 @@ type Favourite = {
   referencePoints: number | null;
 };
 
+type FavouriteRecord = {
+  property?: {
+    id?: number | null;
+    city?: string | null;
+    country?: string | null;
+    title?: string | null;
+  } | null;
+};
+
 export default function DashboardFavourites() {
-  const { user } = useUser();
+  const { isLoaded, isSignedIn } = useAuth();
   const [favourites, setFavourites] = useState<Favourite[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadFavourites() {
-      if (!user) {
+      if (!isSignedIn) {
         setLoading(false);
         return;
       }
@@ -36,13 +45,13 @@ export default function DashboardFavourites() {
         const data = await response.json();
         
         // ✅ 使用新 API 的数据结构: data.favourites
-        const formattedFavourites: Favourite[] = (data.favourites || []).map((fav: any) => {
+        const formattedFavourites: Favourite[] = ((data.favourites || []) as FavouriteRecord[]).map((fav) => {
           const prop = fav.property;
           return {
-            id: prop.id,
-            city: prop.city || "Unknown",
-            country: prop.country || "",
-            title: prop.title || "Untitled Property",
+            id: prop?.id ?? 0,
+            city: prop?.city || "Unknown",
+            country: prop?.country || "",
+            title: prop?.title || "Untitled Property",
             tags: [], // 如果 properties 表有 tags 字段,改为 prop.tags
             referencePoints: null, // 如果有积分字段,改为 prop.reference_points
           };
@@ -56,8 +65,9 @@ export default function DashboardFavourites() {
       }
     }
 
+    if (!isLoaded) return;
     loadFavourites();
-  }, [user]);
+  }, [isLoaded, isSignedIn]);
 
   if (loading) {
     return (

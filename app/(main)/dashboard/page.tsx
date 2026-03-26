@@ -3,6 +3,7 @@
 
 import { useEffect } from "react";
 import { Header } from "../../components/Header";
+import { AuthedShell } from "../../components/AuthedShell";
 import { useTheme } from "../../hooks/useTheme";
 import { useLogout } from "../../hooks/useLogout";
 
@@ -19,11 +20,6 @@ import DashboardPointsHistory from "./components/DashboardPointsHistory";
 // ✅ 新增：认证状态横幅
 import VerificationStatusBanner from "./components/VerificationStatusBanner";
 
-import {
-  UPCOMING_STAYS,
-  DASHBOARD_HOMES,
-} from "./lib/dashboardData";
-
 export default function DashboardPage() {
   const { theme, toggleTheme } = useTheme();
   const handleLogout = useLogout();
@@ -38,7 +34,7 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">
+    <AuthedShell>
       {/* 顶部导航 */}
       <Header
         theme={theme}
@@ -72,6 +68,6 @@ export default function DashboardPage() {
           <DashboardTasks />
         </section>
       </main>
-    </div>
+    </AuthedShell>
   );
 }

@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useAuth } from "@clerk/nextjs";
 
 type StayRequest = {
   id: string;
@@ -26,13 +27,22 @@ type StayRequest = {
 
 export default function DashboardUpcomingStays() {
   const router = useRouter();
+  const { isLoaded, isSignedIn } = useAuth();
   const [asGuest, setAsGuest] = useState<StayRequest[]>([]);
   const [asHost, setAsHost] = useState<StayRequest[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!isLoaded) return;
+    if (!isSignedIn) {
+      setAsGuest([]);
+      setAsHost([]);
+      setLoading(false);
+      return;
+    }
+
     loadRequests();
-  }, []);
+  }, [isLoaded, isSignedIn]);
 
   const loadRequests = async () => {
     try {

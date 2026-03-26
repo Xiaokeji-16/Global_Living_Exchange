@@ -1,11 +1,12 @@
 // app/stay-requests/[id]/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import Image from "next/image";
 import { ArrowLeft, Calendar, Users, MessageSquare, CheckCircle, XCircle } from "lucide-react";
+import { AuthedShell } from "../../../components/AuthedShell";
 
 type StayRequest = {
   id: string;
@@ -44,13 +45,7 @@ export default function StayRequestDetailPage() {
   const [reviewing, setReviewing] = useState(false);
   const [reviewNote, setReviewNote] = useState("");
 
-  useEffect(() => {
-    if (params.id) {
-      loadRequest();
-    }
-  }, [params.id]);
-
-  const loadRequest = async () => {
+  const loadRequest = useCallback(async () => {
     try {
       const res = await fetch(`/api/stay-requests/${params.id}`);
       if (!res.ok) throw new Error("Failed to load request");
@@ -61,7 +56,13 @@ export default function StayRequestDetailPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.id]);
+
+  useEffect(() => {
+    if (params.id) {
+      loadRequest();
+    }
+  }, [loadRequest, params.id]);
 
   const handleReview = async (action: "approve" | "reject") => {
     if (!request) return;
@@ -115,15 +116,15 @@ export default function StayRequestDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[rgb(var(--color-background))] flex items-center justify-center">
+      <AuthedShell className="flex items-center justify-center">
         <div className="text-[rgb(var(--color-muted))]">Loading...</div>
-      </div>
+      </AuthedShell>
     );
   }
 
   if (!request) {
     return (
-      <div className="min-h-screen bg-[rgb(var(--color-background))] flex items-center justify-center">
+      <AuthedShell className="flex items-center justify-center">
         <div className="text-center">
           <p className="text-[rgb(var(--color-muted))] mb-4">Request not found</p>
           <button
@@ -133,7 +134,7 @@ export default function StayRequestDetailPage() {
             Back to Dashboard
           </button>
         </div>
-      </div>
+      </AuthedShell>
     );
   }
 
@@ -141,7 +142,7 @@ export default function StayRequestDetailPage() {
   const canReview = isHost && request.status === "pending";
 
   return (
-    <div className="min-h-screen bg-[rgb(var(--color-background))]">
+    <AuthedShell>
       {/* Header */}
       <header className="border-b border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -292,7 +293,7 @@ export default function StayRequestDetailPage() {
             )}
             {request.review_note && (
               <div className="mt-4">
-                <p className="text-sm font-medium mb-2">Host's message</p>
+                <p className="text-sm font-medium mb-2">Host message</p>
                 <p className="text-sm text-[rgb(var(--color-muted))] whitespace-pre-wrap">
                   {request.review_note}
                 </p>
@@ -301,6 +302,6 @@ export default function StayRequestDetailPage() {
           </div>
         )}
       </main>
-    </div>
+    </AuthedShell>
   );
 }

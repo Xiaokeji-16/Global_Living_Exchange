@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Trash2 } from "lucide-react";
 import { Header } from "../../../components/Header";
+import { AuthedShell } from "../../../components/AuthedShell";
 import { useTheme } from "../../../hooks/useTheme";
 import { useLogout } from "../../../hooks/useLogout";
 
@@ -74,7 +75,7 @@ export default function MyHomesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">
+    <AuthedShell>
       <Header theme={theme} toggleTheme={toggleTheme} variant="authed" onLogoutClick={handleLogout} />
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
@@ -103,7 +104,7 @@ export default function MyHomesPage() {
           <div className="text-center py-20 text-[rgb(var(--color-muted))]">Loading...</div>
         ) : properties.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-[rgb(var(--color-muted))] mb-4">You haven't uploaded any homes yet.</p>
+            <p className="text-[rgb(var(--color-muted))] mb-4">You have not uploaded any homes yet.</p>
             <button
               onClick={() => router.push("/upload-home")}
               className="rounded-full bg-[rgb(var(--color-primary))] px-6 py-2 text-sm font-medium text-white hover:opacity-90 transition"
@@ -178,6 +179,6 @@ export default function MyHomesPage() {
           </div>
         )}
       </main>
-    </div>
+    </AuthedShell>
   );
 }

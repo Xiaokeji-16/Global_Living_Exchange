@@ -3,11 +3,12 @@
 
 import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
-import { supabase } from "@/lib/TS/supabaseClient";
 import { CheckCircle2, XCircle, Clock, ArrowRight } from "lucide-react";
 import Link from "next/link";
-
-type VerificationStatus = "approved" | "pending" | "rejected" | null;
+import {
+  fetchVerificationStatus,
+  type VerificationStatus,
+} from "../lib/verificationStatus";
 
 export default function DashboardProfileCard() {
   const { user } = useUser();
@@ -19,22 +20,9 @@ export default function DashboardProfileCard() {
 
     const loadVerificationStatus = async () => {
       try {
-        const { data, error } = await supabase
-          .from("user_verifications")
-          .select("status")
-          .eq("clerk_user_id", user.id)
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .maybeSingle();
-
-        if (error) {
-          console.error("Error fetching verification status:", error);
-          setVerificationStatus(null);
-        } else {
-          setVerificationStatus(data?.status || null);
-        }
+        setVerificationStatus(await fetchVerificationStatus());
       } catch (err) {
-        console.error("Error:", err);
+        console.error("Error fetching verification status:", err);
         setVerificationStatus(null);
       } finally {
         setLoading(false);

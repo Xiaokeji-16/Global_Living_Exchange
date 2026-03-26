@@ -2,16 +2,18 @@
 "use client";
 
 import { Header } from "../../../components/Header";
+import { AuthedShell } from "../../../components/AuthedShell";
 import { useTheme } from "../../../hooks/useTheme";
 import { useLogout } from "../../../hooks/useLogout";
 import { useUser } from "@clerk/nextjs";
 import UserVerificationForm from "../components/UserVerificationForm";
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/TS/supabaseClient";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-
-type VerificationStatus = "approved" | "pending" | "rejected" | null;
+import {
+  fetchVerificationStatus,
+  type VerificationStatus,
+} from "../lib/verificationStatus";
 
 export default function VerifyPage() {
   const { theme, toggleTheme } = useTheme();
@@ -24,40 +26,27 @@ export default function VerifyPage() {
     user?.firstName || user?.fullName || user?.username || "there";
 
   useEffect(() => {
-    async function fetchVerificationStatus() {
+    async function loadVerificationStatus() {
       if (!user?.id) {
         setLoading(false);
         return;
       }
 
       try {
-        const { data, error } = await supabase
-          .from("user_verifications")
-          .select("status")
-          .eq("clerk_user_id", user.id)
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .maybeSingle();
-
-        if (error) {
-          console.error("Error fetching verification status:", error);
-          setStatus(null);
-        } else {
-          setStatus(data?.status || null);
-        }
+        setStatus(await fetchVerificationStatus());
       } catch (err) {
-        console.error("Error:", err);
+        console.error("Error fetching verification status:", err);
         setStatus(null);
       } finally {
         setLoading(false);
       }
     }
 
-    fetchVerificationStatus();
+    loadVerificationStatus();
   }, [user?.id]);
 
   return (
-    <div className="min-h-screen bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">
+    <AuthedShell>
       <Header
         theme={theme}
         toggleTheme={toggleTheme}
@@ -88,6 +77,6 @@ export default function VerifyPage() {
         {/* 验证表单 */}
         {!loading && <UserVerificationForm existingStatus={status} />}
       </main>
-    </div>
+    </AuthedShell>
   );
 }

@@ -3,6 +3,7 @@
 
 import { useState } from "react";
 import { Header } from "../../../components/Header";
+import { AuthedShell } from "../../../components/AuthedShell";
 import { useTheme } from "../../../hooks/useTheme";
 import { useLogout } from "../../../hooks/useLogout";
 
@@ -25,7 +26,7 @@ export default function DashboardPropertiesPage() {
 
 
   return (
-    <div className="min-h-screen bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">
+    <AuthedShell>
       {/* 登录版导航：variant="authed" */}
       <Header
         theme={theme}
@@ -44,6 +45,6 @@ export default function DashboardPropertiesPage() {
           
         </section>
       </main>
-    </div>
+    </AuthedShell>
   );
 }

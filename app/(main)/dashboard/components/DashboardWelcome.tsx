@@ -3,10 +3,11 @@
 
 import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
-import { supabase } from "@/lib/TS/supabaseClient";
-import { CheckCircle2, Clock, AlertCircle, Crown, Shield, Sparkles } from "lucide-react";
-
-type VerificationStatus = "approved" | "pending" | "rejected" | null;
+import { CheckCircle2, Clock, AlertCircle, Sparkles } from "lucide-react";
+import {
+  fetchVerificationStatus,
+  type VerificationStatus,
+} from "../lib/verificationStatus";
 
 export default function DashboardWelcome() {
   const { user } = useUser();
@@ -16,32 +17,22 @@ export default function DashboardWelcome() {
   const displayName = user?.firstName || user?.fullName || user?.username || "there";
 
   useEffect(() => {
-    async function fetchVerificationStatus() {
+    async function loadVerificationStatus() {
       if (!user?.id) {
         setLoading(false);
         return;
       }
 
       try {
-        const { data, error } = await supabase
-          .from("user_verifications")
-          .select("status")
-          .eq("clerk_user_id", user.id)
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .maybeSingle();
-
-        if (!error) {
-          setVerificationStatus(data?.status || null);
-        }
+        setVerificationStatus(await fetchVerificationStatus());
       } catch (err) {
-        console.error("Error fetching verification:", err);
+        console.error("Error fetching verification status:", err);
       } finally {
         setLoading(false);
       }
     }
 
-    fetchVerificationStatus();
+    loadVerificationStatus();
   }, [user?.id]);
 
   // 根据认证状态确定会员信息

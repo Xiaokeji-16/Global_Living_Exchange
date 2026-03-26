@@ -2,7 +2,6 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "@/lib/TS/supabaseClient";
 import { useUser } from "@clerk/nextjs";
 
 type Props = {
@@ -69,45 +68,30 @@ export default function UserVerificationForm({ existingStatus = null }: Props) {
 
     setSubmitting(true);
     try {
-      console.log("=== Starting verification submission ===");
-      console.log("User ID:", user.id);
-      console.log("Full name:", fullName.trim());
-      console.log("Country:", country.trim());
-      console.log("Document type:", documentType);
-      console.log("Document number:", documentNumber.trim());
-
-      const insertData = {
-        clerk_user_id: user.id,
+      const payload = {
         full_name: fullName.trim(),
         country: country.trim(),
         document_type: documentType,
         document_number: documentNumber.trim(),
         note: notes.trim() || null,
-        status: "pending",
       };
 
-      console.log("Insert data:", insertData);
+      const response = await fetch("/api/verification/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
-      const { data, error: insertError } = await supabase
-        .from("user_verifications")
-        .insert(insertData)
-        .select();
+      const result = await response.json().catch(() => null);
 
-      console.log("Supabase response - data:", data);
-      console.log("Supabase response - error:", insertError);
-
-      if (insertError) {
-        console.error("=== Insert Error Details ===");
-        console.error("Code:", insertError.code);
-        console.error("Message:", insertError.message);
-        console.error("Details:", insertError.details);
-        console.error("Hint:", insertError.hint);
-        console.error("Full error:", JSON.stringify(insertError, null, 2));
-        
-        throw new Error(insertError.message || "Unknown database error");
+      if (!response.ok) {
+        throw new Error(
+          result?.error || "Failed to submit verification"
+        );
       }
 
-      console.log("=== Verification submitted successfully ===");
       setSuccess("Verification submitted. We'll review your information soon.");
       
       // 清空表单
@@ -117,16 +101,10 @@ export default function UserVerificationForm({ existingStatus = null }: Props) {
       setDocumentNumber("");
       setNotes("");
     } catch (err) {
-      console.error("=== Catch block error ===");
-      console.error("Error type:", typeof err);
-      console.error("Error:", err);
-      console.error("Error string:", String(err));
-      console.error("Error JSON:", JSON.stringify(err, Object.getOwnPropertyNames(err)));
-      
       if (err instanceof Error) {
         setError(`Failed to submit: ${err.message}`);
       } else {
-        setError("Failed to submit verification. Please check the console for details.");
+        setError("Failed to submit verification. Please try again.");
       }
     } finally {
       setSubmitting(false);

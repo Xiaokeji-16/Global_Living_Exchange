@@ -33,6 +33,25 @@
   --color-accent: 205 163 138;
 }
 
+.authed-shell {
+  /* Logged-in surfaces use a cooler palette than the public marketing pages. */
+  --color-background: 248 250 252;
+  --color-card: 255 255 255;
+  --color-card-foreground: 29 41 57;
+  --color-secondary: 241 245 249;
+  --color-secondary-foreground: 29 41 57;
+  --color-border: 217 226 236;
+}
+
+.dark .authed-shell {
+  --color-background: 16 23 31;
+  --color-card: 24 34 46;
+  --color-card-foreground: 233 239 246;
+  --color-secondary: 30 42 56;
+  --color-secondary-foreground: 233 239 246;
+  --color-border: 63 77 96;
+}
+
 * {
   margin: 0;
   padding: 0;

@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
     // 4. 获取房源信息（包括房主 ID）
     const { data: property, error: propertyError } = await supabase
       .from("properties")
-      .select("id, clerk_user_id, title, city, country")
+      .select("id, host_id, title, city, country")
       .eq("id", property_id)
       .single();
 
@@ -53,10 +53,17 @@ export async function POST(req: NextRequest) {
     }
 
     // 5. 不能请求自己的房子
-    if (property.clerk_user_id === userId) {
+    if (property.host_id === userId) {
       return NextResponse.json(
         { error: "Cannot request your own property" },
         { status: 400 }
+      );
+    }
+
+    if (!property.host_id) {
+      return NextResponse.json(
+        { error: "Property host is missing" },
+        { status: 500 }
       );
     }
 
@@ -90,7 +97,7 @@ export async function POST(req: NextRequest) {
       .insert({
         property_id,
         guest_user_id: userId,
-        host_user_id: property.clerk_user_id,
+        host_user_id: property.host_id,
         check_in,
         check_out,
         guests,

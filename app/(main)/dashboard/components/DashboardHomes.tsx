@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useAuth } from "@clerk/nextjs";
 
 type Property = {
   id: number;
@@ -18,12 +19,20 @@ type Property = {
 
 export default function YourHomes() {
   const router = useRouter();
+  const { isLoaded, isSignedIn } = useAuth();
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!isLoaded) return;
+    if (!isSignedIn) {
+      setProperties([]);
+      setLoading(false);
+      return;
+    }
+
     loadProperties();
-  }, []);
+  }, [isLoaded, isSignedIn]);
 
   const loadProperties = async () => {
     try {

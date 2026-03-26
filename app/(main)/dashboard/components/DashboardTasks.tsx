@@ -3,8 +3,8 @@
 
 import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
-import { supabase } from "@/lib/TS/supabaseClient";
 import Link from "next/link";
+import { fetchVerificationStatus } from "../lib/verificationStatus";
 
 type TaskStatus = "Required" | "In progress" | "Completed" | "Recommended";
 
@@ -31,15 +31,7 @@ export default function DashboardTasks() {
 
       try {
         // 1. 检查身份验证状态
-        const { data: verificationData } = await supabase
-          .from("user_verifications")
-          .select("status")
-          .eq("clerk_user_id", user.id)
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .maybeSingle();
-
-        const verificationStatus = verificationData?.status;
+        const verificationStatus = await fetchVerificationStatus();
 
         if (!verificationStatus || verificationStatus === "rejected") {
           taskList.push({
@@ -63,11 +55,18 @@ export default function DashboardTasks() {
         }
 
         // 2. 检查是否有房源
-        const { data: homesData } = await supabase
-          .from("properties")
-          .select("id")
-          .eq("clerk_user_id", user.id)
-          .limit(1);
+        const homesResponse = await fetch("/api/properties/my-homes", {
+          cache: "no-store",
+        });
+
+        if (!homesResponse.ok) {
+          throw new Error("Failed to fetch homes");
+        }
+
+        const homesPayload = (await homesResponse.json()) as {
+          properties?: Array<{ id?: number; ownership_proof_url?: string | null }>;
+        };
+        const homesData = homesPayload.properties || [];
 
         if (!homesData || homesData.length === 0) {
           taskList.push({
@@ -77,15 +76,11 @@ export default function DashboardTasks() {
             href: "/upload-home",
           });
         } else {
-          // 检查房源是否有所有权证明
-          const { data: proofData } = await supabase
-            .from("properties")
-            .select("ownership_proof_url")
-            .eq("clerk_user_id", user.id)
-            .is("ownership_proof_url", null)
-            .limit(1);
+          const missingOwnershipProof = homesData.some(
+            (home) => !home.ownership_proof_url
+          );
 
-          if (proofData && proofData.length > 0) {
+          if (missingOwnershipProof) {
             taskList.push({
               id: "ownership-proof",
               title: "Upload home ownership proof",

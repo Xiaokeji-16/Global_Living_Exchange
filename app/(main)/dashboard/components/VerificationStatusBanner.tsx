@@ -3,11 +3,12 @@
 
 import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
-import { supabase } from "@/lib/TS/supabaseClient";
-import { CheckCircle2, Clock, XCircle, AlertCircle } from "lucide-react";
+import { Clock, XCircle, AlertCircle } from "lucide-react";
 import Link from "next/link";
-
-type VerificationStatus = "approved" | "pending" | "rejected" | null;
+import {
+  fetchVerificationStatus,
+  type VerificationStatus,
+} from "../lib/verificationStatus";
 
 export default function VerificationStatusBanner() {
   const { user } = useUser();
@@ -15,36 +16,23 @@ export default function VerificationStatusBanner() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchVerificationStatus() {
+    async function loadVerificationStatus() {
       if (!user?.id) {
         setLoading(false);
         return;
       }
 
       try {
-        const { data, error } = await supabase
-          .from("user_verifications")
-          .select("status")
-          .eq("clerk_user_id", user.id)
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .maybeSingle();
-
-        if (error) {
-          console.error("Error fetching verification status:", error);
-          setStatus(null);
-        } else {
-          setStatus(data?.status || null);
-        }
+        setStatus(await fetchVerificationStatus());
       } catch (err) {
-        console.error("Error:", err);
+        console.error("Error fetching verification status:", err);
         setStatus(null);
       } finally {
         setLoading(false);
       }
     }
 
-    fetchVerificationStatus();
+    loadVerificationStatus();
   }, [user?.id]);
 
   if (loading) {
@@ -67,7 +55,7 @@ export default function VerificationStatusBanner() {
               Verification Pending
             </h3>
             <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
-              Your verification request is being reviewed. We'll notify you once it's complete.
+              Your verification request is being reviewed. We&apos;ll notify you once it&apos;s complete.
             </p>
           </div>
         </div>
@@ -86,7 +74,7 @@ export default function VerificationStatusBanner() {
               Verification Rejected
             </h3>
             <p className="text-sm text-red-700 dark:text-red-300 mt-1">
-              Unfortunately, we couldn't verify your identity. Please submit again with correct information.
+              Unfortunately, we couldn&apos;t verify your identity. Please submit again with correct information.
             </p>
             <Link
               href="/dashboard/verify"

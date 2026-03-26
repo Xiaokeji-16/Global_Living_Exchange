@@ -2,6 +2,7 @@
 "use client";
 
 import { Header } from "../../components/Header";
+import { AuthedShell } from "../../components/AuthedShell";
 import { useTheme } from "../../hooks/useTheme";
 import { useLogout } from "../../hooks/useLogout";
 import { UploadHomeForm } from "./components/UploadHomeForm";
@@ -11,7 +12,7 @@ export default function UploadHomePage() {
   const handleLogout = useLogout();
 
   return (
-    <div className="min-h-screen bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">
+    <AuthedShell>
       {/* 登录版导航：从 dashboard 顶部过来的 Upload home */}
       <Header
         theme={theme}
@@ -23,6 +24,6 @@ export default function UploadHomePage() {
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
         <UploadHomeForm />
       </main>
-    </div>
+    </AuthedShell>
   );
 }

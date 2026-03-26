@@ -21,7 +21,6 @@ export default function InboxList({ type, status, title, description }: InboxLis
     refreshInterval: 30000, // 30秒自动刷新
   });
 
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [reviewNote, setReviewNote] = useState("");
   const [showNoteModal, setShowNoteModal] = useState(false);
   const [currentAction, setCurrentAction] = useState<"approve" | "deny" | null>(null);
@@ -221,7 +220,7 @@ export default function InboxList({ type, status, title, description }: InboxLis
 
                 {/* 右侧操作按钮 */}
                 <div className="flex flex-col gap-2 flex-shrink-0">
-                  {item.status === "unread" && (
+                  {item.status === "unread" && item.type !== "feedback" && (
                     <>
                       <button
                         onClick={() => handleReview(item.id, "approve")}

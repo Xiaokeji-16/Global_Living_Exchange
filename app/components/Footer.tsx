@@ -1,10 +1,26 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function Footer() {
+  const pathname = usePathname();
+  const isAuthedFooter =
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/upload-home") ||
+    pathname.startsWith("/stay-requests");
+
   return (
-    <footer className="border-t border-[rgb(var(--color-border))] bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))] mt-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <footer
+      className={[
+        "border-t border-[rgb(var(--color-border))] bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]",
+        isAuthedFooter ? "authed-shell" : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-10">
         {/* 上半部分：三列布局 */}
         <div className="grid gap-10 md:grid-cols-3">
           {/* 左：Logo + 文案 */}
