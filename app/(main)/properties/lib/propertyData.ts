@@ -22,6 +22,48 @@ export type Property = {
   houseRules?: string;
 };
 
+export type PropertyDetail = {
+  id: number;
+  streetAddress: string | null;
+  city: string;
+  country: string;
+  stateRegion: string | null;
+  postcode: string | null;
+  title: string;
+  guests: number;
+  beds: number;
+  referencePoints: number | null;
+  tags: string[];
+  imageSrc: string;
+  verified: boolean;
+  description: string;
+  bedrooms: number | null;
+  bathrooms: number | null;
+  photos: string[];
+  propertyType: string | null;
+  stayCategory: string | null;
+  houseRules: string;
+  hostId: string | null;
+  createdAt: string | null;
+};
+
+export function formatPropertyLabel(value?: string | null): string {
+  if (!value) return "";
+
+  return value
+    .split(/[-_]/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+export function splitHouseRules(value?: string | null): string[] {
+  return (value ?? "")
+    .split(/\n|,/)
+    .map((rule) => rule.trim())
+    .filter(Boolean);
+}
+
 // 顶部筛选条 / 列表用到的筛选类型
 export type PropertyFilters = {
   query: string; // 文本搜索:城市 / 国家 / 标题
@@ -45,14 +87,21 @@ export function matchesFilters(
     if (!inCity && !inCountry && !inTitle) return false;
   }
 
-  // 2. 类型匹配（用 tags 简单模拟）
-  // ✅ 如果没有 tags 或 tags 为空,显示所有房产(不过滤)
-  if (type !== "all" && property.tags && property.tags.length > 0) {
-    const tagsLower = property.tags.map((t) => t.toLowerCase());
-    if (type === "luxury" && !tagsLower.includes("luxury")) return false;
-    if (type === "beach" && !tagsLower.includes("beach")) return false;
-    if (type === "city" && !tagsLower.some((t) => t.includes("city")))
+  // 2. 类型匹配
+  const propertyType = property.propertyType?.toLowerCase() || "";
+  const stayCategory = property.stayCategory?.toLowerCase() || "";
+  const titleLower = property.title.toLowerCase();
+
+  if (type !== "all") {
+    if (type === "luxury" && !(propertyType === "villa" || titleLower.includes("luxury"))) {
       return false;
+    }
+    if (type === "beach" && !stayCategory.includes("beach")) {
+      return false;
+    }
+    if (type === "city" && !stayCategory.includes("city")) {
+      return false;
+    }
   }
 
   // 3. 积分区间

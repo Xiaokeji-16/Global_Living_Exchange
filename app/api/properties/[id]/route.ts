@@ -14,11 +14,12 @@ export async function GET(
     const { data: property, error } = await supabase
       .from("properties")
       .select(`
-        id, title, description, city, country,
+        id, title, description, street_address, city, country,
         property_type, stay_category, guests,
         bedrooms, beds, bathrooms, house_rules,
         photos, verification_status, reference_points,
-        tags, created_at
+        state_region, postcode,
+        tags, created_at, host_id
       `)
       .eq("id", id)
       .single();
@@ -76,7 +77,7 @@ export async function DELETE(
     }
 
     return NextResponse.json({ ok: true });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

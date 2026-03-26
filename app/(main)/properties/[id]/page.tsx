@@ -3,9 +3,10 @@
 
 import { useRouter, useParams } from "next/navigation";
 import { useState, useEffect } from "react";
+import { useUser } from "@clerk/nextjs";
 import { Header } from "../../../components/Header";
 import { useTheme } from "../../../hooks/useTheme";
-import { type Property } from "../lib/propertyData";
+import { type PropertyDetail } from "../lib/propertyData";
 import { PropertyDetailHero } from "../components/PropertyDetailHero";
 import { PropertyDetailMainInfo } from "../components/PropertyDetailMainInfo";
 import { PropertyDetailSidebar } from "../components/PropertyDetailSidebar";
@@ -16,9 +17,10 @@ export default function PropertyDetailPage() {
   const router = useRouter();
   const params = useParams() as RouteParams | null;
   const { theme, toggleTheme } = useTheme();
+  const { isSignedIn } = useUser();
 
   const id = params?.id;
-  const [property, setProperty] = useState<Property | null>(null);
+  const [property, setProperty] = useState<PropertyDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
@@ -39,11 +41,14 @@ export default function PropertyDetailPage() {
         const data = await response.json();
         const prop = data.property;
 
-        // 转换为前端 Property 格式
+        // 转换为前端 PropertyDetail 格式
         setProperty({
           id: prop.id,
+          streetAddress: prop.street_address || null,
           city: prop.city || "Unknown",
           country: prop.country || "",
+          stateRegion: prop.state_region || null,
+          postcode: prop.postcode || null,
           title: prop.title || "Untitled Property",
           guests: prop.guests || 1,
           beds: prop.beds || 1,
@@ -51,14 +56,15 @@ export default function PropertyDetailPage() {
           tags: prop.tags || [],
           imageSrc: prop.photos?.[0] || "/placeholder-property.jpg",
           verified: prop.verification_status === "approved",
-          // 详情页额外字段
-          description: prop.description,
-          bedrooms: prop.bedrooms,
-          bathrooms: prop.bathrooms,
+          description: prop.description || "",
+          bedrooms: prop.bedrooms ?? null,
+          bathrooms: prop.bathrooms ?? null,
           photos: prop.photos || [],
-          propertyType: prop.property_type,
-          stayCategory: prop.stay_category,
-          houseRules: prop.house_rules,
+          propertyType: prop.property_type || null,
+          stayCategory: prop.stay_category || null,
+          houseRules: prop.house_rules || "",
+          hostId: prop.host_id || null,
+          createdAt: prop.created_at || null,
         });
       } catch (error) {
         console.error("Error loading property:", error);
@@ -102,7 +108,11 @@ export default function PropertyDetailPage() {
 
   return (
     <div className="min-h-screen bg-[rgb(var(--color-background))] text-[rgb(var(--color-foreground))]">
-      <Header theme={theme} toggleTheme={toggleTheme} />
+      <Header
+        theme={theme}
+        toggleTheme={toggleTheme}
+        variant={isSignedIn ? "authed" : "public"}
+      />
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
         <button

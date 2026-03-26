@@ -1,18 +1,17 @@
 // app/upload-home/components/UploadHomeForm.tsx
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@clerk/nextjs";
 import { BasicInfoSection } from "./BasicInfoSection";
 import { LocationCapacitySection } from "./LocationCapacitySection";
 import { PhotosSection } from "./PhotosSection";
 import { HouseRulesSection } from "./HouseRulesSection";
+import { AmenitiesSection } from "./AmenitiesSection";
 import { SidebarTips } from "./SidebarTips";
 
 export function UploadHomeForm() {
   const router = useRouter();
-  const { userId } = useAuth();
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -20,15 +19,20 @@ export function UploadHomeForm() {
   const [stayCategory, setStayCategory] = useState("city-break");
   const [country, setCountry] = useState("");
   const [city, setCity] = useState("");
+  const [streetAddress, setStreetAddress] = useState("");
+  const [stateRegion, setStateRegion] = useState("");
+  const [postcode, setPostcode] = useState("");
   const [guests, setGuests] = useState<number | "">("");
   const [bedrooms, setBedrooms] = useState<number | "">("");
   const [beds, setBeds] = useState<number | "">("");
   const [bathrooms, setBathrooms] = useState<number | "">("");
   const [photos, setPhotos] = useState<File[]>([]);
   const [photoUrls, setPhotoUrls] = useState<string[]>([]);
+  const [amenities, setAmenities] = useState<string[]>([]);
   const [houseRules, setHouseRules] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const submissionLockRef = useRef(false);
 
   const handlePhotosChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -80,6 +84,9 @@ export function UploadHomeForm() {
 
   const handleSaveDraft = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submissionLockRef.current) return;
+
+    submissionLockRef.current = true;
     setIsSubmitting(true);
     setError(null);
 
@@ -99,10 +106,14 @@ export function UploadHomeForm() {
           stayCategory,
           country,
           city,
+          streetAddress,
+          stateRegion,
+          postcode,
           guests: guests || null,
           bedrooms: bedrooms || null,
           beds: beds || null,
           bathrooms: bathrooms || null,
+          amenities,
           houseRules,
           photos: uploadedPhotoUrls,
           isDraft: true,
@@ -118,18 +129,22 @@ export function UploadHomeForm() {
       console.error("Save draft error:", err);
       setError(err instanceof Error ? err.message : "save draft failed");
     } finally {
+      submissionLockRef.current = false;
       setIsSubmitting(false);
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submissionLockRef.current) return;
+
+    submissionLockRef.current = true;
     setIsSubmitting(true);
     setError(null);
 
     try {
-      if (!title || !description || !country || !city) {
-        throw new Error("please fill in all required fields (title, description, country, city)");
+      if (!title || !description || !streetAddress || !country || !city) {
+        throw new Error("please fill in all required fields (title, description, detailed address, country, city)");
       }
       if (guests === null || guests === undefined || guests === "") {
         throw new Error("please fill in the number of guests");
@@ -159,10 +174,14 @@ export function UploadHomeForm() {
           stayCategory,
           country,
           city,
+          streetAddress,
+          stateRegion,
+          postcode,
           guests: Number(guests),
           bedrooms: Number(bedrooms),
           beds: Number(beds),
           bathrooms: Number(bathrooms),
+          amenities,
           houseRules,
           photos: uploadedPhotoUrls,
           isDraft: false,
@@ -178,6 +197,7 @@ export function UploadHomeForm() {
       console.error("Submit error:", err);
       setError(err instanceof Error ? err.message : "submit failed");
     } finally {
+      submissionLockRef.current = false;
       setIsSubmitting(false);
     }
   };
@@ -218,12 +238,18 @@ export function UploadHomeForm() {
           <LocationCapacitySection
             country={country}
             city={city}
+            streetAddress={streetAddress}
+            stateRegion={stateRegion}
+            postcode={postcode}
             guests={guests}
             bedrooms={bedrooms}
             beds={beds}
             bathrooms={bathrooms}
             onCountryChange={setCountry}
             onCityChange={setCity}
+            onStreetAddressChange={setStreetAddress}
+            onStateRegionChange={setStateRegion}
+            onPostcodeChange={setPostcode}
             onGuestsChange={setGuests}
             onBedroomsChange={setBedrooms}
             onBedsChange={setBeds}
@@ -235,6 +261,11 @@ export function UploadHomeForm() {
             photoUrls={photoUrls}
             onPhotosChange={handlePhotosChange}
             onRemovePhoto={handleRemovePhoto}
+          />
+
+          <AmenitiesSection
+            value={amenities}
+            onChange={setAmenities}
           />
 
           <HouseRulesSection

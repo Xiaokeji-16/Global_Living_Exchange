@@ -22,6 +22,8 @@ type PropertyApiItem = {
   title: string | null;
   guests: number | null;
   beds: number | null;
+  property_type?: string | null;
+  stay_category?: string | null;
   reference_points?: number | null;
   tags?: string[] | null;
   photos?: string[] | null;
@@ -65,6 +67,8 @@ export default function PropertyListSection({ filters, mode = "public" }: Props)
           title: prop.title || "Untitled Property",
           guests: prop.guests || 1,
           beds: prop.beds || 1,
+          propertyType: prop.property_type || undefined,
+          stayCategory: prop.stay_category || undefined,
           referencePoints: prop.reference_points ?? null,
           tags: prop.tags || [],
           imageSrc: prop.photos?.[0] || "/placeholder-property.jpg",

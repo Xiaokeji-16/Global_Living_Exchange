@@ -17,7 +17,7 @@ type Property = {
   verification_status: string;
 };
 
-export default function YourHomes() {
+export default function DashboardHomes() {
   const router = useRouter();
   const { isLoaded, isSignedIn } = useAuth();
   const [properties, setProperties] = useState<Property[]>([]);
@@ -49,10 +49,10 @@ export default function YourHomes() {
 
   const getStatusBadge = (status: string) => {
     const badges = {
-      draft: { text: "Draft", color: "bg-gray-100 text-gray-700" },
-      pending: { text: "Pending review", color: "bg-yellow-100 text-yellow-700" },
-      approved: { text: "Active", color: "bg-emerald-100 text-emerald-700" },
-      rejected: { text: "Rejected", color: "bg-red-100 text-red-700" },
+      draft: { text: "Draft", color: "bg-slate-100 text-slate-700 dark:bg-slate-700/40 dark:text-slate-200" },
+      pending: { text: "Pending review", color: "bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-200" },
+      approved: { text: "Active", color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-200" },
+      rejected: { text: "Rejected", color: "bg-rose-100 text-rose-700 dark:bg-rose-500/15 dark:text-rose-200" },
     };
     const badge = badges[status as keyof typeof badges] || badges.draft;
     return (
@@ -66,7 +66,7 @@ export default function YourHomes() {
 
   if (loading) {
     return (
-      <div className="rounded-2xl border border-[rgb(var(--color-border))] bg-white p-8">
+      <div className="rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] p-8">
         <div className="flex items-center justify-center py-12">
           <div className="text-[rgb(var(--color-muted))]">Loading...</div>
         </div>
@@ -75,9 +75,9 @@ export default function YourHomes() {
   }
 
   return (
-    <div className="rounded-2xl border border-[rgb(var(--color-border))] bg-white p-6 sm:p-8">
+    <div className="rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] p-6 sm:p-8">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl sm:text-2xl font-semibold">Your homes</h2>
+        <h2 className="text-xl sm:text-2xl font-semibold">My homes</h2>
         <button
           onClick={() => router.push("/upload-home")}
           className="inline-flex items-center gap-2 text-sm font-medium text-[rgb(var(--color-primary))] hover:underline"
@@ -93,7 +93,7 @@ export default function YourHomes() {
           </p>
           <button
             onClick={() => router.push("/upload-home")}
-            className="inline-flex items-center gap-2 rounded-full bg-[rgb(var(--color-primary))] px-6 py-2 text-sm font-medium text-white hover:opacity-90 transition"
+            className="inline-flex items-center gap-2 rounded-full bg-[rgb(var(--color-primary))] px-6 py-2 text-sm font-medium text-[rgb(var(--color-primary-foreground))] hover:opacity-90 transition"
           >
             + Upload your first home
           </button>
@@ -116,8 +116,8 @@ export default function YourHomes() {
                       className="object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                      <span className="text-gray-400 text-xs">No photo</span>
+                    <div className="flex h-full w-full items-center justify-center bg-[rgb(var(--color-secondary))]">
+                      <span className="text-xs text-[rgb(var(--color-muted))]">No photo</span>
                     </div>
                   )}
                 </div>

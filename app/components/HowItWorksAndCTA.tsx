@@ -67,7 +67,7 @@ export function HowItWorksAndCTA() {
   return (
     <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
       <div
-        className="max-w-7xl mx-auto rounded-[40px] bg-gradient-to-b from-[rgba(15,23,42,0.02)] to-[rgba(15,23,42,0.06)] px-6 py-10 shadow-sm sm:px-10 sm:py-14 lg:px-12"
+        className="max-w-7xl mx-auto rounded-[40px] border border-[rgb(var(--color-border))] bg-gradient-to-b from-[rgba(85,107,142,0.05)] to-[rgba(85,107,142,0.10)] px-6 py-10 shadow-sm dark:from-[rgba(156,176,208,0.08)] dark:to-[rgba(156,176,208,0.14)] sm:px-10 sm:py-14 lg:px-12"
       >
         <div className="mb-10">
           <div className="max-w-2xl mx-auto text-center mb-8">
@@ -85,7 +85,7 @@ export function HowItWorksAndCTA() {
               return (
                 <div
                   key={step.number}
-                  className="flex flex-col rounded-2xl border border-[rgba(85,107,142,0.12)] bg-[#FAF7F2] p-4 shadow-sm"
+                  className="flex flex-col rounded-2xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] p-4 shadow-sm"
                 >
                   <div className="relative w-full h-24 overflow-hidden rounded-xl">
                     <Image
@@ -97,7 +97,7 @@ export function HowItWorksAndCTA() {
                   </div>
 
                   <div className="mt-4 flex items-center gap-2">
-                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[rgba(85,107,142,0.10)] text-xs font-semibold text-[rgb(var(--color-primary))]">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[rgb(var(--color-secondary))] text-xs font-semibold text-[rgb(var(--color-primary))]">
                       {step.number}
                     </span>
                     <h3 className="text-sm font-semibold text-[rgb(var(--color-foreground))]">
@@ -120,42 +120,42 @@ export function HowItWorksAndCTA() {
           </div>
         </div>
 
-        <div className="rounded-[32px] bg-[rgba(255,255,255,0.76)] px-6 py-7 shadow-sm ring-1 ring-[rgba(85,107,142,0.08)] backdrop-blur-sm sm:px-8 sm:py-8">
+        <div className="rounded-[32px] border border-[rgb(var(--color-border))] bg-[rgb(var(--color-card))] px-6 py-7 shadow-sm backdrop-blur-sm sm:px-8 sm:py-8">
           <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
-            <p className="inline-flex items-center rounded-full bg-[rgba(85,107,142,0.10)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[rgb(var(--color-primary))]">
-              Join verified homes worldwide
-            </p>
-            <h3 className="mt-4 text-2xl font-semibold tracking-tight text-[rgb(var(--color-foreground))] sm:text-[2rem]">
-              Create your account and start exploring
-            </h3>
-            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[rgb(var(--color-muted))] sm:text-base">
-              Join in minutes, complete verification, and unlock mid- to
-              long-term stays with trusted members around the world.
-            </p>
+              <p className="inline-flex items-center rounded-full bg-[rgb(var(--color-secondary))] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[rgb(var(--color-primary))]">
+                Join verified homes worldwide
+              </p>
+              <h3 className="mt-4 text-2xl font-semibold tracking-tight text-[rgb(var(--color-foreground))] sm:text-[2rem]">
+                Create your account and start exploring
+              </h3>
+              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[rgb(var(--color-muted))] sm:text-base">
+                Join in minutes, complete verification, and unlock mid- to
+                long-term stays with trusted members around the world.
+              </p>
 
-            <div className="mt-5 flex flex-wrap gap-x-5 gap-y-3">
-              {ctaHighlights.map((item) => {
-                const Icon = item.icon;
+              <div className="mt-5 flex flex-wrap gap-x-5 gap-y-3">
+                {ctaHighlights.map((item) => {
+                  const Icon = item.icon;
 
-                return (
-                  <div
-                    key={item.label}
-                    className="inline-flex items-center gap-2 text-xs text-[rgb(var(--color-foreground))] sm:text-sm"
-                  >
-                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[rgba(85,107,142,0.10)] text-[rgb(var(--color-primary))]">
-                      <Icon size={14} />
-                    </span>
-                    <span>{item.label}</span>
-                  </div>
-                );
-              })}
-            </div>
+                  return (
+                    <div
+                      key={item.label}
+                      className="inline-flex items-center gap-2 text-xs text-[rgb(var(--color-foreground))] sm:text-sm"
+                    >
+                      <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[rgb(var(--color-secondary))] text-[rgb(var(--color-primary))]">
+                        <Icon size={14} />
+                      </span>
+                      <span>{item.label}</span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row lg:flex-col lg:items-stretch">
               <div className="flex items-center gap-3 text-sm text-[rgb(var(--color-muted))]">
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-[rgba(85,107,142,0.10)] text-[rgb(var(--color-primary))]">
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-[rgb(var(--color-secondary))] text-[rgb(var(--color-primary))]">
                   <CheckCircle2 className="h-5 w-5" />
                 </span>
                 <span className="max-w-xs leading-relaxed">

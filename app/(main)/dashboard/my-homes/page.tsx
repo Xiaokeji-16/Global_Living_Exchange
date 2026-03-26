@@ -61,10 +61,10 @@ export default function MyHomesPage() {
 
   const getStatusBadge = (status: string) => {
     const badges = {
-      draft: { text: "Draft", color: "bg-gray-100 text-gray-700" },
-      pending: { text: "Pending review", color: "bg-yellow-100 text-yellow-700" },
-      approved: { text: "Active", color: "bg-emerald-100 text-emerald-700" },
-      rejected: { text: "Rejected", color: "bg-red-100 text-red-700" },
+      draft: { text: "Draft", color: "bg-slate-100 text-slate-700 dark:bg-slate-700/40 dark:text-slate-200" },
+      pending: { text: "Pending review", color: "bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-200" },
+      approved: { text: "Active", color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-200" },
+      rejected: { text: "Rejected", color: "bg-rose-100 text-rose-700 dark:bg-rose-500/15 dark:text-rose-200" },
     };
     const badge = badges[status as keyof typeof badges] || badges.draft;
     return (
@@ -87,14 +87,14 @@ export default function MyHomesPage() {
             >
               ← Back
             </button>
-            <h1 className="text-2xl sm:text-3xl font-semibold">Your homes</h1>
+            <h1 className="text-2xl sm:text-3xl font-semibold">My homes</h1>
             <p className="mt-1 text-sm text-[rgb(var(--color-muted))]">
               {properties.length} {properties.length === 1 ? "home" : "homes"} listed
             </p>
           </div>
           <button
             onClick={() => router.push("/upload-home")}
-            className="rounded-full bg-[rgb(var(--color-primary))] px-5 py-2 text-sm font-medium text-white hover:opacity-90 transition"
+            className="rounded-full bg-[rgb(var(--color-primary))] px-5 py-2 text-sm font-medium text-[rgb(var(--color-primary-foreground))] hover:opacity-90 transition"
           >
             + Upload new home
           </button>
@@ -107,7 +107,7 @@ export default function MyHomesPage() {
             <p className="text-[rgb(var(--color-muted))] mb-4">You have not uploaded any homes yet.</p>
             <button
               onClick={() => router.push("/upload-home")}
-              className="rounded-full bg-[rgb(var(--color-primary))] px-6 py-2 text-sm font-medium text-white hover:opacity-90 transition"
+              className="rounded-full bg-[rgb(var(--color-primary))] px-6 py-2 text-sm font-medium text-[rgb(var(--color-primary-foreground))] hover:opacity-90 transition"
             >
               + Upload your first home
             </button>
@@ -124,8 +124,8 @@ export default function MyHomesPage() {
                     {property.photos?.length > 0 ? (
                       <Image src={property.photos[0]} alt={property.title} fill className="object-cover" />
                     ) : (
-                      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                        <span className="text-gray-400 text-xs">No photo</span>
+                      <div className="flex h-full w-full items-center justify-center bg-[rgb(var(--color-secondary))]">
+                        <span className="text-xs text-[rgb(var(--color-muted))]">No photo</span>
                       </div>
                     )}
                   </div>
@@ -165,7 +165,7 @@ export default function MyHomesPage() {
                         ) : (
                           <button
                             onClick={e => { e.stopPropagation(); setConfirmId(property.id); }}
-                            className="opacity-0 group-hover:opacity-100 transition p-1.5 rounded-lg hover:bg-red-50 text-[rgb(var(--color-muted))] hover:text-red-500"
+                            className="rounded-lg p-1.5 text-[rgb(var(--color-muted))] opacity-0 transition hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/40 group-hover:opacity-100"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>

@@ -3,19 +3,19 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { UserButton } from "@clerk/nextjs";
 import CustomFieldsPage from "@/app/components/CustomFieldsPage";
 import { Menu, X, Moon, Sun, Sparkles } from "lucide-react";
 import AdminHeader from "@/app/admin/components/AdminHeader";
 import { Nunito } from "next/font/google";
 
-
 const nunito = Nunito({ subsets: ["latin"], weight: ["800"] });
 
 interface HeaderProps {
   theme: "light" | "dark";
   toggleTheme: () => void;
+  mounted?: boolean; // 新增：用于防止 hydration 不匹配
   /**
    * public  = 未登录
    * authed  = 普通用户登录后的导航
@@ -34,9 +34,12 @@ type NavItem = {
 export function Header({
   theme,
   toggleTheme,
+  mounted = true,
   variant = "public",
   onLogoutClick,
 }: HeaderProps) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   // 如果是管理员模式，直接使用 AdminHeader
   if (variant === "admin") {
     return (
@@ -48,18 +51,10 @@ export function Header({
     );
   }
 
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  // 避免 hydration 问题
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-
   // 游客版导航
   const publicNavLinks: NavItem[] = [
     { label: "Home", href: "/" },
     { label: "Property", href: "/properties" },
-    { label: "About us", href: "/about" },
-    { label: "Contact us", href: "/contact" },
   ];
 
   // 登录用户版导航
@@ -74,26 +69,23 @@ export function Header({
 
   const isPublic = variant === "public";
 
-  const handleLogout = () => {
-    onLogoutClick?.();
-  };
-
+  // 渲染主题图标：未挂载时显示占位符，避免 hydration 不匹配
   const renderThemeIcon = () => {
-    if (!mounted) return <Moon size={18} />;
+    if (!mounted) {
+      return <div className="w-[18px] h-[18px]" />;
+    }
     return theme === "light" ? <Moon size={18} /> : <Sun size={18} />;
   };
 
-  // 把带自定义 tab 的 UserButton 抽成一个小组件，桌面 / 手机都复用
-  const RenderUserButton = () => (
+  const userButton = (
     <UserButton
       appearance={{
         elements: {
-          avatarBox: "w-8 h-8", // 桌面版大小，手机那边可以覆盖
-          userButtonPopoverCard: "w-[480px]", // 让弹窗宽一点（可选）
+          avatarBox: "w-8 h-8",
+          userButtonPopoverCard: "w-[480px]",
         },
       }}
     >
-      {/* 自定义 tab：自定义字段 */}
       <UserButton.UserProfilePage
         label="Preference"
         url="custom-fields"
@@ -109,17 +101,16 @@ export function Header({
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link
-            href="/"
-            className="flex items-center gap-2"
-          >
+          <Link href="/" className="flex items-center gap-2">
             <Image
               src="/icon/home_app_logo.svg"
               alt="Global Living Exchange Logo"
               width={45}
               height={45}
             />
-            <span className={`${nunito.className} text-xl font-extrabold tracking-tight text-gray-700 dark:text-gray-200`}>
+            <span
+              className={`${nunito.className} text-xl font-extrabold tracking-tight text-gray-700 dark:text-gray-200`}
+            >
               Global Living Exchange
             </span>
           </Link>
@@ -164,11 +155,7 @@ export function Header({
                 </Link>
               </>
             ) : (
-              <div className="flex items-center space-x-3">
-                {/* Clerk 用户头像 + 自定义字段 tab */}
-                <RenderUserButton />
-
-              </div>
+              <div className="flex items-center space-x-3">{userButton}</div>
             )}
           </div>
 
@@ -227,7 +214,6 @@ export function Header({
                   </>
                 ) : (
                   <div className="flex items-center justify-between">
-                    {/* 手机端也用同一个 UserButton（带自定义字段 tab） */}
                     <UserButton
                       appearance={{
                         elements: {
@@ -241,10 +227,9 @@ export function Header({
                         url="custom-fields"
                         labelIcon={<Sparkles size={14} />}
                       >
-                     <CustomFieldsPage />
+                        <CustomFieldsPage />
                       </UserButton.UserProfilePage>
                     </UserButton>
-                      
                   </div>
                 )}
               </div>

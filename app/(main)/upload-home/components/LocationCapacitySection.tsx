@@ -5,12 +5,18 @@ type NumberLike = number | "";
 type Props = {
   country: string;
   city: string;
+  streetAddress: string;
+  stateRegion: string;
+  postcode: string;
   guests: NumberLike;
   bedrooms: NumberLike;
   beds: NumberLike;
   bathrooms: NumberLike;
   onCountryChange: (v: string) => void;
   onCityChange: (v: string) => void;
+  onStreetAddressChange: (v: string) => void;
+  onStateRegionChange: (v: string) => void;
+  onPostcodeChange: (v: string) => void;
   onGuestsChange: (v: NumberLike) => void;
   onBedroomsChange: (v: NumberLike) => void;
   onBedsChange: (v: NumberLike) => void;
@@ -20,12 +26,18 @@ type Props = {
 export function LocationCapacitySection({
   country,
   city,
+  streetAddress,
+  stateRegion,
+  postcode,
   guests,
   bedrooms,
   beds,
   bathrooms,
   onCountryChange,
   onCityChange,
+  onStreetAddressChange,
+  onStateRegionChange,
+  onPostcodeChange,
   onGuestsChange,
   onBedroomsChange,
   onBedsChange,
@@ -63,6 +75,52 @@ export function LocationCapacitySection({
             placeholder="e.g. Adelaide"
             value={city}
             onChange={(e) => onCityChange(e.target.value)}
+          />
+        </div>
+
+        <div className="sm:col-span-2">
+          <label className="block text-sm mb-1" htmlFor="streetAddress">
+            Detailed address
+          </label>
+          <input
+            id="streetAddress"
+            type="text"
+            className="w-full rounded-lg border border-[rgb(var(--color-border))] bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))]"
+            placeholder="e.g. 25 King William Street"
+            value={streetAddress}
+            onChange={(e) => onStreetAddressChange(e.target.value)}
+          />
+          <p className="mt-1 text-xs text-[rgb(var(--color-muted))]">
+            Used for internal review and matching. Public listing pages can still
+            show only an approximate location.
+          </p>
+        </div>
+
+        <div>
+          <label className="block text-sm mb-1" htmlFor="stateRegion">
+            State / region
+          </label>
+          <input
+            id="stateRegion"
+            type="text"
+            className="w-full rounded-lg border border-[rgb(var(--color-border))] bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))]"
+            placeholder="e.g. South Australia"
+            value={stateRegion}
+            onChange={(e) => onStateRegionChange(e.target.value)}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm mb-1" htmlFor="postcode">
+            Postcode
+          </label>
+          <input
+            id="postcode"
+            type="text"
+            className="w-full rounded-lg border border-[rgb(var(--color-border))] bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))]"
+            placeholder="e.g. 5000"
+            value={postcode}
+            onChange={(e) => onPostcodeChange(e.target.value)}
           />
         </div>
       </div>

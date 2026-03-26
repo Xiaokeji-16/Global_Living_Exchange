@@ -4,14 +4,13 @@
 import { useState } from "react";
 import Image from "next/image";
 import { MapPin, X, ChevronLeft, ChevronRight } from "lucide-react";
-import type { Property } from "../lib/propertyData";
+import { type PropertyDetail } from "../lib/propertyData";
 
 type Props = {
-  property: Property;
+  property: PropertyDetail;
 };
 
 export function PropertyDetailHero({ property }: Props) {
-  const tags = property.tags ?? [];
   const allPhotos = (property.photos && property.photos.length > 0)
     ? property.photos
     : [property.imageSrc];
@@ -50,11 +49,6 @@ export function PropertyDetailHero({ property }: Props) {
           onClick={() => openGallery(0)}
         >
           <Image src={mainPhoto} alt={property.title} fill className="object-cover" />
-          {tags.includes("Luxury") && (
-            <span className="absolute left-4 top-4 rounded-full bg-[rgb(var(--color-primary))] px-3 py-1 text-xs font-medium text-[rgb(var(--color-primary-foreground))] shadow">
-              Featured
-            </span>
-          )}
         </div>
 
         {/* 右：小图 */}
