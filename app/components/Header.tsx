@@ -55,6 +55,8 @@ export function Header({
   const publicNavLinks: NavItem[] = [
     { label: "Home", href: "/" },
     { label: "Property", href: "/properties" },
+    { label: "About us", href: "/about" },
+    { label: "Contact us", href: "/contact" },
   ];
 
   // 登录用户版导航
